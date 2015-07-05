@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,8 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 public class ArtistFragment extends Fragment {
+
+    ArrayAdapter<String> artistAdapter;
 
     public ArtistFragment() {
     }
@@ -33,6 +36,12 @@ public class ArtistFragment extends Fragment {
 
         List<String> artistsSearchResults = new ArrayList<>(Arrays.asList(data));
 
+        // Create an ArrayAdapter
+        artistAdapter = new ArrayAdapter<>(
+                getActivity(),
+                R.layout.list_item_artist,
+                R.id.list_item_artist_textview
+        );
 
 
         return inflater.inflate(R.layout.fragment_artist, container, false);

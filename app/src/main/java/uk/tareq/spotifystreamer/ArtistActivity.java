@@ -1,12 +1,12 @@
 package uk.tareq.spotifystreamer;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class Artist extends ActionBarActivity {
+public class ArtistActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

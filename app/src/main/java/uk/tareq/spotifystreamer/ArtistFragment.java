@@ -40,7 +40,8 @@ public class ArtistFragment extends Fragment {
         artistAdapter = new ArrayAdapter<>(
                 getActivity(),
                 R.layout.list_item_artist,
-                R.id.list_item_artist_textview
+                R.id.list_item_artist_textview,
+                artistsSearchResults
         );
 
 

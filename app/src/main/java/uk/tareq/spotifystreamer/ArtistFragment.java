@@ -12,13 +12,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyService;
+
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class ArtistFragment extends Fragment {
 
-    ArrayAdapter<String> artistAdapter;
+    ArrayAdapter<String> mArtistAdapter;
 
     public ArtistFragment() {
     }
@@ -38,19 +41,21 @@ public class ArtistFragment extends Fragment {
         List<String> artistsSearchResults = new ArrayList<>(Arrays.asList(data));
 
         // Create an ArrayAdapter
-        artistAdapter = new ArrayAdapter<>(
+        mArtistAdapter = new ArrayAdapter<>(
                 getActivity(),
                 R.layout.list_item_artist,
                 R.id.list_item_artist_textview,
                 artistsSearchResults
         );
+        SpotifyApi spotifyApi = new SpotifyApi();
+        SpotifyService service = spotifyApi.getService();
 
 
         View rootView = inflater.inflate(R.layout.fragment_artist, container, false);
 
         // Get a reference to the rootView
         ListView listView = (ListView) rootView.findViewById(R.id.listview_tracks);
-        listView.setAdapter(artistAdapter);
+        listView.setAdapter(mArtistAdapter);
         return rootView;
     }
 

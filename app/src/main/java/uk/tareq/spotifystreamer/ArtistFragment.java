@@ -5,59 +5,60 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import kaaes.spotify.webapi.android.SpotifyApi;
-import kaaes.spotify.webapi.android.SpotifyService;
-
-
 /**
- * A placeholder fragment containing a simple view.
+ * Fragment for the Artist search and display results
  */
 public class ArtistFragment extends Fragment {
 
-    ArrayAdapter<String> mArtistAdapter;
+    // Holds the ListView instance that derives the data from the adapter.
+    private ListView mArtistListView;
 
+    /**
+     * Default constructor
+     */
     public ArtistFragment() {
     }
 
     @Override
+    /**
+     * When the fragment View is created inflation required.
+     */
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Dummy Data for the listView
-        String[] data = {
-                "Coldplay",
-                "Coldplay & Lele",
-                "Coldplay & Rihanna",
-                "Various Artists - Coldplay Tribute"
+        super.onCreateView(inflater, container, savedInstanceState);
+
+        // Dummy data
+        MyArtist artist_data[] = {
+                new MyArtist(R.drawable.coldplay064, "Coldplay"),
+                new MyArtist(R.drawable.karaokeelite064, "Coldplay & Lele"),
+                new MyArtist(R.drawable.mailbox064, "Coldplay & Rihanna"),
+                new MyArtist(R.drawable.princessofchina064, "Various Artists - Coldplay Tribute")
         };
 
-        List<String> artistsSearchResults = new ArrayList<>(Arrays.asList(data));
+        // Create an ArtistAdapter instance
+        ArtistAdapter artistAdapter = new ArtistAdapter(
+                getActivity(), // uses current activity
+                R.layout.list_item_artist, // Use the layout for each artist showing image and name
+                artist_data); // load the data into the adapter.
 
-        // Create an ArrayAdapter
-        mArtistAdapter = new ArrayAdapter<>(
-                getActivity(),
-                R.layout.list_item_artist,
-                R.id.list_item_artist_textview,
-                artistsSearchResults
-        );
-        SpotifyApi spotifyApi = new SpotifyApi();
-        SpotifyService service = spotifyApi.getService();
-
-
+        // Inflate the rootView for the fragment, which includes the ListView element.
         View rootView = inflater.inflate(R.layout.fragment_artist, container, false);
 
-        // Get a reference to the rootView
-        ListView listView = (ListView) rootView.findViewById(R.id.listview_tracks);
-        listView.setAdapter(mArtistAdapter);
+        // Create a View to hold the inflated artist search header
+        View artistSearchView = getActivity().getLayoutInflater().inflate(R.layout.header_artist_search, null);
+
+        // Variable to hold the inflated ListView
+        mArtistListView = (ListView) rootView.findViewById(R.id.list_view_artist);
+
+        // Add Header to the ListView
+        mArtistListView.addHeaderView(artistSearchView);
+
+        // Add Adapter (containing data) to the ListView
+        mArtistListView.setAdapter(artistAdapter);
+
         return rootView;
     }
-
-
 }

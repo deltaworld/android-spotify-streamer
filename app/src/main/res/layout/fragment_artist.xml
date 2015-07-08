@@ -9,13 +9,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".ArtistFragment">
 
-    <EditText
-        android:id="@+id/edittext_search_artist"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <ListView
-        android:id="@+id/listview_tracks"
+        android:id="@+id/list_view_artist"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />

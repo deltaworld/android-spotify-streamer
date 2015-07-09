@@ -12,6 +12,7 @@ import android.widget.ListView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
@@ -86,7 +87,7 @@ public class ArtistFragment extends Fragment {
     /**
      * Class definition for fetching the Artist data asynchronously on a separate thread.
      */
-    public class SearchSpotifyTask extends AsyncTask<String, Void, Void> {
+    public class SearchSpotifyTask extends AsyncTask<String, Void, List<MyArtist>> {
 
         // Constant for debugging class definition
         private final String LOG_TAG = SearchSpotifyTask.class.getSimpleName();
@@ -98,7 +99,7 @@ public class ArtistFragment extends Fragment {
          * @return will return the network result
          */
         @Override
-        protected Void doInBackground(String... searchQuery) {
+        protected List<MyArtist> doInBackground(String... searchQuery) {
 
             if (searchQuery == null || searchQuery[0].equals("")) {
                 return null;
@@ -121,15 +122,17 @@ public class ArtistFragment extends Fragment {
                      */
                     String artistName = searchQuery[0];
 
+
                     // results of search as a <Artist> objects
                     ArtistsPager results = spotifyService.searchArtists(artistName);
 
                     // Store <Artist> objects in List by .artists.items
                     List<Artist> artists = results.artists.items;
+                    List<MyArtist> artistData = new ArrayList<>();
 
                     // Loop through all artists to display name and image url
                     for (int i = 0; i < artists.size(); i++) {
-                        String artistImageUrl;
+                        String artistImageUrl = null;
 
                         Artist artist = artists.get(i);
                         // List all artist names
@@ -158,6 +161,7 @@ public class ArtistFragment extends Fragment {
 
                                 //p.load(artistImageUrl).into(imageView);
 
+
                                 Log.i(LOG_TAG, smallestImage + " " + artistImageUrl + " " +
                                         artistImage.width + " " + artistImage.height);
                             } else {
@@ -175,7 +179,9 @@ public class ArtistFragment extends Fragment {
                             Log.e(LOG_TAG, e.getClass().getName());
                             Log.e(LOG_TAG, e.getMessage());
                         }
+                        artistData.add(new MyArtist(0, artistName, artistImageUrl));
                     }
+                    return artistData;
                 } catch (RetrofitError e) {
                     // If search Query not found then display toast
                     Log.e(LOG_TAG, e.getClass().getName());
@@ -194,7 +200,6 @@ public class ArtistFragment extends Fragment {
 
                 }
             }
-            return null;
         }
     }
 }

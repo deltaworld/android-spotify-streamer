@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 /**
  * Created: by Tareq Fadel on 06/07/15.
  * Custom ArrayAdapter utilising the MyArtist Class
@@ -17,7 +19,7 @@ public class ArtistAdapter extends ArrayAdapter<MyArtist> {
 
     Context context;
     int layoutResourceId;
-    MyArtist data[] = null;
+    List<MyArtist> data = null;
 
     /**
      * Constructor for the Array adapter
@@ -26,7 +28,7 @@ public class ArtistAdapter extends ArrayAdapter<MyArtist> {
      * @param layoutResourceId Layout ID that the adapter
      * @param data             to include the MyArtist data
      */
-    public ArtistAdapter(Context context, int layoutResourceId, MyArtist data[]) {
+    public ArtistAdapter(Context context, int layoutResourceId, List<MyArtist> data) {
         super(context, layoutResourceId, data);
 
         this.context = context;
@@ -60,8 +62,9 @@ public class ArtistAdapter extends ArrayAdapter<MyArtist> {
         } else {
             holder = (ArtistHolder) listItemArtistView.getTag();
         }
+        //Get the data at the associated position
+        MyArtist artist = getItem(position);
 
-        MyArtist artist = data[position];
         holder.artistName.setText(artist.artistName);
         holder.image.setImageResource(artist.artistImageIndex);
 

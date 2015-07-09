@@ -13,6 +13,7 @@ import android.widget.ListView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
@@ -30,6 +31,7 @@ public class ArtistFragment extends Fragment {
     // Holds the ListView instance that derives the data from the adapter.
     private ListView mArtistListView;
     private ArtistAdapter mArtistAdapter;
+
 
     /**
      * Default constructor
@@ -54,12 +56,18 @@ public class ArtistFragment extends Fragment {
                 new MyArtist(R.drawable.princessofchina064, "ZZZVarious Artists - Coldplay Tribute", "")
         };
 
+        //ArrayList<String> lst = new ArrayList<String>(Arrays.asList(array));
+        //final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        //        android.R.layout.simple_list_item_1, lst);
+        ArrayList<MyArtist> artistDummyDataList = new ArrayList<>(Arrays.asList(artist_data));
+        mArtistAdapter = new ArtistAdapter(getActivity(), R.layout.list_item_artist, artistDummyDataList);
+
         // Create an ArtistAdapter instance
-        mArtistAdapter = new ArtistAdapter(
+        /*mArtistAdapter = new ArtistAdapter(
                 getActivity(), // uses current activity
                 R.layout.list_item_artist, // Use the layout for each artist showing image and name
                 artist_data); // load the data into the adapter.
-
+*/
         // Inflate the rootView for the fragment, which includes the ListView element.
         View rootView = inflater.inflate(R.layout.fragment_artist, container, false);
 
@@ -102,6 +110,9 @@ public class ArtistFragment extends Fragment {
         @Override
         protected List<MyArtist> doInBackground(String... searchQuery) {
 
+            // data to be returned as result
+            List<MyArtist> artistData = new ArrayList<>();
+
             if (searchQuery == null || searchQuery[0].equals("")) {
                 return null;
             } else {
@@ -129,7 +140,7 @@ public class ArtistFragment extends Fragment {
 
                     // Store <Artist> objects in List by .artists.items
                     List<Artist> artists = results.artists.items;
-                    List<MyArtist> artistData = new ArrayList<>();
+
 
                     // Loop through all artists to display name and image url
                     for (int i = 0; i < artists.size(); i++) {
@@ -180,7 +191,7 @@ public class ArtistFragment extends Fragment {
                             Log.e(LOG_TAG, e.getClass().getName());
                             Log.e(LOG_TAG, e.getMessage());
                         }
-                        artistData.add(new MyArtist(0, artistName, artistImageUrl));
+                        artistData.add(new MyArtist(0, artist.name, artistImageUrl));
                     }
                     return artistData;
                 } catch (RetrofitError e) {
@@ -198,7 +209,6 @@ public class ArtistFragment extends Fragment {
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
 */
-
                 }
             }
         }
@@ -210,11 +220,14 @@ public class ArtistFragment extends Fragment {
                 for (MyArtist a : myArtists) {
                     Log.i(LOG_TAG, "FROM POST: " + a.artistName + " " + a.artistImageUrl);
                 }
-                //Foo[] array = list.toArray(new Foo[list.size()]);
+
                 MyArtist[] array = myArtists.toArray(new MyArtist[myArtists.size()]);
-                Log.i(LOG_TAG, array.toString());
-//                mArtistAdapter.clear();
-                //mArtistAdapter.addAll(array);
+
+                // Empty the Adapter from the dummy data
+                mArtistAdapter.clear();
+
+                // Add new data
+                mArtistAdapter.addAll(array);
 
             }
         }

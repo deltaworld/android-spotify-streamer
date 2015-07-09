@@ -201,6 +201,18 @@ public class ArtistFragment extends Fragment {
                 }
             }
         }
+
+        @Override
+        protected void onPostExecute(List<MyArtist> myArtists) {
+            super.onPostExecute(myArtists);
+            if (myArtists != null) {
+                for (MyArtist a : myArtists) {
+                    Log.i(LOG_TAG, "FROM POST: " + a.artistName + " " + a.artistImageUrl);
+                }
+
+
+            }
+        }
     }
 }
 

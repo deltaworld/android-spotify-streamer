@@ -7,6 +7,7 @@ package uk.tareq.spotifystreamer;
 public class MyArtist {
     public int artistImageIndex;
     public String artistName;
+    public String artistImageUrl;
 
     /**
      * Default constructor
@@ -21,10 +22,11 @@ public class MyArtist {
      * @param artistImageIndex holds the name of the drawable image
      * @param artistName       Artists name
      */
-    public MyArtist(int artistImageIndex, String artistName) {
+    public MyArtist(int artistImageIndex, String artistName, String artistImageUrl) {
         super();
         this.artistImageIndex = artistImageIndex;
         this.artistName = artistName;
+        this.artistImageUrl = artistImageUrl;
     }
 
 }

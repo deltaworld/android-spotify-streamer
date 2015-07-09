@@ -7,7 +7,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -43,10 +46,10 @@ public class ArtistFragment extends Fragment {
 
         // Dummy data
         MyArtist artist_data[] = {
-                new MyArtist(R.drawable.coldplay064, "Coldplay"),
-                new MyArtist(R.drawable.karaokeelite064, "Coldplay & Lele"),
-                new MyArtist(R.drawable.mailbox064, "Coldplay & Rihanna"),
-                new MyArtist(R.drawable.princessofchina064, "Various Artists - Coldplay Tribute")
+                new MyArtist(R.drawable.coldplay064, "Coldplay", ""),
+                new MyArtist(R.drawable.karaokeelite064, "Coldplay & Lele", ""),
+                new MyArtist(R.drawable.mailbox064, "Coldplay & Rihanna", ""),
+                new MyArtist(R.drawable.princessofchina064, "Various Artists - Coldplay Tribute", "")
         };
 
         // Create an ArtistAdapter instance
@@ -59,7 +62,8 @@ public class ArtistFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_artist, container, false);
 
         // Create a View to hold the inflated artist search header
-        View artistSearchView = getActivity().getLayoutInflater().inflate(R.layout.header_artist_search, null);
+        View artistSearchView = getActivity().getLayoutInflater().inflate(
+                R.layout.header_artist_search, null);
 
         // Variable to hold the inflated ListView
         mArtistListView = (ListView) rootView.findViewById(R.id.list_view_artist);
@@ -96,7 +100,7 @@ public class ArtistFragment extends Fragment {
         @Override
         protected Void doInBackground(String... searchQuery) {
 
-            if (searchQuery == null) {
+            if (searchQuery == null || searchQuery[0].equals("")) {
                 return null;
             } else {
 
@@ -111,7 +115,8 @@ public class ArtistFragment extends Fragment {
 
                     /**
                      * Get Spotify catalog information about artists that match a keyword string.
-                     * String: The search query's keywords (and optional field filters and operators), for example "roadhouse+blues"
+                     * String: The search query's keywords (and optional field filters and operators),
+                     * for example "roadhouse+blues"
                      * @see <a href="https://developer.spotify.com/web-api/search-item/">Search for an Item</a>
                      */
                     String artistName = searchQuery[0];
@@ -135,6 +140,8 @@ public class ArtistFragment extends Fragment {
                             // Initialise variables
                             int smallestImage;
                             Image artistImage;
+                            Picasso p = Picasso.with(getActivity());
+                            ImageView imageView = null;
 
                             // Artists may have more than one image, store images in list to extract
                             List<Image> artistImages = artist.images;
@@ -142,11 +149,14 @@ public class ArtistFragment extends Fragment {
                             // Some artists do not have images, use if/else to exclude image url
                             // extraction from the artists that do not have images.
                             if (artist.images.size() != 0) {
+
                                 // get smallest size image from last image in the index
                                 smallestImage = artistImages.size() - 1;
 
                                 artistImage = artistImages.get(smallestImage);
                                 artistImageUrl = artistImage.url;
+
+                                //p.load(artistImageUrl).into(imageView);
 
                                 Log.i(LOG_TAG, smallestImage + " " + artistImageUrl + " " +
                                         artistImage.width + " " + artistImage.height);
@@ -154,6 +164,8 @@ public class ArtistFragment extends Fragment {
                                 // If image is not found use an image placeholder
                                 // TODO: localise image resource.
                                 artistImageUrl = "http://www.londonnights.com/gfx/default/search_no_photo.png";
+
+                                //p.load(artistImageUrl).into(imageView);
 
                                 Log.i(LOG_TAG, "Artist has no image");
                                 Log.i(LOG_TAG, " " + artistImageUrl + " " + 64 + " " + 64);
@@ -165,10 +177,20 @@ public class ArtistFragment extends Fragment {
                         }
                     }
                 } catch (RetrofitError e) {
+                    // If search Query not found then display toast
                     Log.e(LOG_TAG, e.getClass().getName());
                     Log.e(LOG_TAG, e.getMessage());
-
+                    return null;
                     // TODO: Add Toast Message to user that the search request is invalid.
+
+/*                  -- Toast Message --
+                    Context context = getActivity();
+                    CharSequence text = "Could not find artist";
+                    int duration = Toast.LENGTH_SHORT;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+*/
 
                 }
             }

@@ -69,7 +69,6 @@ public class ArtistAdapter extends ArrayAdapter<MyArtist> {
 
     }
 
-
     static class ArtistHolder {
         ImageView image;
         TextView artistName;

@@ -29,6 +29,8 @@ public class ArtistFragment extends Fragment {
 
     // Holds the ListView instance that derives the data from the adapter.
     private ListView mArtistListView;
+    private ArtistAdapter mArtistAdapter;
+
 
     /**
      * Default constructor
@@ -54,7 +56,7 @@ public class ArtistFragment extends Fragment {
         };
 
         // Create an ArtistAdapter instance
-        ArtistAdapter artistAdapter = new ArtistAdapter(
+        mArtistAdapter = new ArtistAdapter(
                 getActivity(), // uses current activity
                 R.layout.list_item_artist, // Use the layout for each artist showing image and name
                 artist_data); // load the data into the adapter.
@@ -73,7 +75,7 @@ public class ArtistFragment extends Fragment {
         mArtistListView.addHeaderView(artistSearchView);
 
         // Add Adapter (containing data) to the ListView
-        mArtistListView.setAdapter(artistAdapter);
+        mArtistListView.setAdapter(mArtistAdapter);
 
         // Start ASync Task Thread
         SearchSpotifyTask task = new SearchSpotifyTask();
@@ -209,7 +211,9 @@ public class ArtistFragment extends Fragment {
                 for (MyArtist a : myArtists) {
                     Log.i(LOG_TAG, "FROM POST: " + a.artistName + " " + a.artistImageUrl);
                 }
-
+                MyArtist[] array = myArtists.toArray(new MyArtist[myArtists.size()]);
+                //mArtistAdapter.clear(); // ERROR HERE
+                //mArtistAdapter.addAll(array);
 
             }
         }

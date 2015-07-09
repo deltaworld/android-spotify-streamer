@@ -31,7 +31,6 @@ public class ArtistFragment extends Fragment {
     private ListView mArtistListView;
     private ArtistAdapter mArtistAdapter;
 
-
     /**
      * Default constructor
      */
@@ -49,10 +48,10 @@ public class ArtistFragment extends Fragment {
 
         // Dummy data
         MyArtist artist_data[] = {
-                new MyArtist(R.drawable.coldplay064, "Coldplay", ""),
-                new MyArtist(R.drawable.karaokeelite064, "Coldplay & Lele", ""),
-                new MyArtist(R.drawable.mailbox064, "Coldplay & Rihanna", ""),
-                new MyArtist(R.drawable.princessofchina064, "Various Artists - Coldplay Tribute", "")
+                new MyArtist(R.drawable.coldplay064, "ZZZColdplay", ""),
+                new MyArtist(R.drawable.karaokeelite064, "ZZZColdplay & Lele", ""),
+                new MyArtist(R.drawable.mailbox064, "ZZZColdplay & Rihanna", ""),
+                new MyArtist(R.drawable.princessofchina064, "ZZZVarious Artists - Coldplay Tribute", "")
         };
 
         // Create an ArtistAdapter instance
@@ -211,8 +210,10 @@ public class ArtistFragment extends Fragment {
                 for (MyArtist a : myArtists) {
                     Log.i(LOG_TAG, "FROM POST: " + a.artistName + " " + a.artistImageUrl);
                 }
+                //Foo[] array = list.toArray(new Foo[list.size()]);
                 MyArtist[] array = myArtists.toArray(new MyArtist[myArtists.size()]);
-                //mArtistAdapter.clear(); // ERROR HERE
+                Log.i(LOG_TAG, array.toString());
+//                mArtistAdapter.clear();
                 //mArtistAdapter.addAll(array);
 
             }

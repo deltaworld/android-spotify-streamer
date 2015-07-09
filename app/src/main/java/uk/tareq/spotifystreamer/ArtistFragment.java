@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import java.io.BufferedReader;
-import java.net.HttpURLConnection;
 import java.util.List;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
@@ -75,8 +73,8 @@ public class ArtistFragment extends Fragment {
         // Start ASync Task Thread
         SearchSpotifyTask task = new SearchSpotifyTask();
 
-        // TODO: Change Async Task to accept String queries
-        task.execute();
+        // Pass search query to AsyncTask
+        task.execute("Coldplay");
 
         return rootView;
     }
@@ -84,7 +82,7 @@ public class ArtistFragment extends Fragment {
     /**
      * Class definition for fetching the Artist data asynchronously on a separate thread.
      */
-    public class SearchSpotifyTask extends AsyncTask<Void, Void, Void> {
+    public class SearchSpotifyTask extends AsyncTask<String, Void, Void> {
 
         // Constant for debugging class definition
         private final String LOG_TAG = SearchSpotifyTask.class.getSimpleName();
@@ -92,95 +90,88 @@ public class ArtistFragment extends Fragment {
         /**
          * The method that performs a separate network call to retrieve the artist data.
          *
-         * @param strings the parameters here are set to Void as no required paramters at this stage.
+         * @param searchQuery the parameters here are set to Void as no required paramters at this stage.
          * @return will return the network result
          */
         @Override
-        protected Void doInBackground(Void... strings) {
+        protected Void doInBackground(String... searchQuery) {
 
-            // These two need to be declared outside the try/catch so that they can be closed
-            // in the final block.
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
+            if (searchQuery == null) {
+                return null;
+            } else {
 
-            // Will contain the artist response in string format
-            String ArtistStr;
+                try {
+                    // Spotify Web Api Integration
 
+                    // Instance class of Spotify Api to use the service
+                    SpotifyApi spotifyApi = new SpotifyApi();
 
-            try {
-                // Spotify Web Api Integration
+                    // From the SpotifyApi run the getService method
+                    SpotifyService spotifyService = spotifyApi.getService();
 
-                // Instance class of Spotify Api to use the service
-                SpotifyApi spotifyApi = new SpotifyApi();
+                    /**
+                     * Get Spotify catalog information about artists that match a keyword string.
+                     * String: The search query's keywords (and optional field filters and operators), for example "roadhouse+blues"
+                     * @see <a href="https://developer.spotify.com/web-api/search-item/">Search for an Item</a>
+                     */
+                    String artistName = searchQuery[0];
 
-                // From the SpotifyApi run the getService method
-                SpotifyService spotifyService = spotifyApi.getService();
+                    // results of search as a <Artist> objects
+                    ArtistsPager results = spotifyService.searchArtists(artistName);
 
-                /**
-                 * Get Spotify catalog information about artists that match a keyword string.
-                 * String: The search query's keywords (and optional field filters and operators), for example "roadhouse+blues"
-                 * @see <a href="https://developer.spotify.com/web-api/search-item/">Search for an Item</a>
-                 */
-                String artistName = "Coldplay";
+                    // Store <Artist> objects in List by .artists.items
+                    List<Artist> artists = results.artists.items;
 
-                // results of search as a <Artist> objects
-                ArtistsPager results = spotifyService.searchArtists(artistName);
+                    // Loop through all artists to display name and image url
+                    for (int i = 0; i < artists.size(); i++) {
+                        String artistImageUrl;
 
-                // Store <Artist> objects in List by .artists.items
-                List<Artist> artists = results.artists.items;
+                        Artist artist = artists.get(i);
+                        // List all artist names
+                        Log.i(LOG_TAG, i + " " + artist.name);
+                        // TODO: use Picasso to cache images
 
-                // Loop through all artists to display name and image url
-                for (int i = 0; i < artists.size(); i++) {
-                    String artistImageUrl;
+                        try {
+                            // Initialise variables
+                            int smallestImage;
+                            Image artistImage;
 
-                    Artist artist = artists.get(i);
-                    // List all artist names
-                    Log.i(LOG_TAG, i + " " + artist.name);
-                    // TODO: use Picasso to cache images
+                            // Artists may have more than one image, store images in list to extract
+                            List<Image> artistImages = artist.images;
 
+                            // Some artists do not have images, use if/else to exclude image url
+                            // extraction from the artists that do not have images.
+                            if (artist.images.size() != 0) {
+                                // get smallest size image from last image in the index
+                                smallestImage = artistImages.size() - 1;
 
-                    try {
-                        // Initialise variables
-                        int smallestImage;
-                        Image artistImage;
+                                artistImage = artistImages.get(smallestImage);
+                                artistImageUrl = artistImage.url;
 
-                        // Artists may have more than one image, store images in list to extract
-                        List<Image> artistImages = artist.images;
+                                Log.i(LOG_TAG, smallestImage + " " + artistImageUrl + " " +
+                                        artistImage.width + " " + artistImage.height);
+                            } else {
+                                // If image is not found use an image placeholder
+                                // TODO: localise image resource.
+                                artistImageUrl = "http://www.londonnights.com/gfx/default/search_no_photo.png";
 
-                        // Some artists do not have images, use if/else to exclude image url
-                        // extraction from the artists that do not have images.
-                        if (artist.images.size() != 0) {
-                            // get smallest size image from last image in the index
-                            smallestImage = artistImages.size() - 1;
+                                Log.i(LOG_TAG, "Artist has no image");
+                                Log.i(LOG_TAG, " " + artistImageUrl + " " + 64 + " " + 64);
+                            }
 
-                            artistImage = artistImages.get(smallestImage);
-                            artistImageUrl = artistImage.url;
-
-                            Log.i(LOG_TAG, smallestImage + " " + artistImageUrl + " " +
-                                    artistImage.width + " " + artistImage.height);
-                        } else {
-                            // If image is not found use an image placeholder
-                            // TODO: localise image resource.
-                            artistImageUrl = "http://www.londonnights.com/gfx/default/search_no_photo.png";
-
-                            Log.i(LOG_TAG, "Artist has no image");
-                            Log.i(LOG_TAG, " " + artistImageUrl + " " + 64 + " " + 64);
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            Log.e(LOG_TAG, e.getClass().getName());
+                            Log.e(LOG_TAG, e.getMessage());
                         }
-
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        Log.e(LOG_TAG, e.getClass().getName());
-                        Log.e(LOG_TAG, e.getMessage());
                     }
+                } catch (RetrofitError e) {
+                    Log.e(LOG_TAG, e.getClass().getName());
+                    Log.e(LOG_TAG, e.getMessage());
+
+                    // TODO: Add Toast Message to user that the search request is invalid.
+
                 }
-            } catch (RetrofitError e) {
-                Log.e(LOG_TAG, e.getClass().getName());
-                Log.e(LOG_TAG, e.getMessage());
-
-                // TODO: Add Toast Message to user that the search request is invalid.
-
             }
-
-
             return null;
         }
     }

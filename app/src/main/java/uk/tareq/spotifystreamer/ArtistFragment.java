@@ -17,6 +17,7 @@ import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
+import retrofit.RetrofitError;
 
 /**
  * Fragment for the Artist search and display results
@@ -102,27 +103,35 @@ public class ArtistFragment extends Fragment {
             String ArtistStr;
 
 
-            // Spotify Web Api Integration
+            try {
+                // Spotify Web Api Integration
 
-            // Instance class of Spotify Api to use the service
-            SpotifyApi spotifyApi = new SpotifyApi();
+                // Instance class of Spotify Api to use the service
+                SpotifyApi spotifyApi = new SpotifyApi();
 
-            // From the SpotifyApi run the getService method
-            SpotifyService spotifyService = spotifyApi.getService();
+                // From the SpotifyApi run the getService method
+                SpotifyService spotifyService = spotifyApi.getService();
 
-            /**
-             * Get Spotify catalog information about artists that match a keyword string.
-             * String: The search query's keywords (and optional field filters and operators), for example "roadhouse+blues"
-             * @see <a href="https://developer.spotify.com/web-api/search-item/">Search for an Item</a>
-             */
-            String artistName = "Coldplay";
+                /**
+                 * Get Spotify catalog information about artists that match a keyword string.
+                 * String: The search query's keywords (and optional field filters and operators), for example "roadhouse+blues"
+                 * @see <a href="https://developer.spotify.com/web-api/search-item/">Search for an Item</a>
+                 */
+                //String artistName = "Coldplay";
 
-            ArtistsPager results = spotifyService.searchArtists(artistName);
+                ArtistsPager results = spotifyService.searchArtists("");
 
-            List<Artist> artists = results.artists.items;
-            for (int i = 0; i < artists.size(); i++) {
-                Artist artist = artists.get(i);
-                Log.i(LOG_TAG, i + " " + artist.name);
+                List<Artist> artists = results.artists.items;
+                for (int i = 0; i < artists.size(); i++) {
+                    Artist artist = artists.get(i);
+                    Log.i(LOG_TAG, i + " " + artist.name);
+                }
+            } catch (RetrofitError e) {
+                Log.i(LOG_TAG, e.getClass().getName());
+                Log.i(LOG_TAG, e.getMessage());
+
+                //TODO: Add Toast Message to user that the search request is invalid.
+
             }
 
 

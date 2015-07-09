@@ -45,27 +45,27 @@ public class ArtistAdapter extends ArrayAdapter<MyArtist> {
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View listItemView = convertView;
+        View listItemArtistView = convertView;
         ArtistHolder holder;
 
-        if (listItemView == null) {
+        if (listItemArtistView == null) {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-            listItemView = inflater.inflate(layoutResourceId, parent, false);
+            listItemArtistView = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new ArtistHolder();
-            holder.image = (ImageView) listItemView.findViewById(R.id.list_item_artist_imageview);
-            holder.artistName = (TextView) listItemView.findViewById(R.id.list_item_artist_textview);
+            holder.image = (ImageView) listItemArtistView.findViewById(R.id.list_item_artist_imageview);
+            holder.artistName = (TextView) listItemArtistView.findViewById(R.id.list_item_artist_textview);
 
-            listItemView.setTag(holder);
+            listItemArtistView.setTag(holder);
         } else {
-            holder = (ArtistHolder) listItemView.getTag();
+            holder = (ArtistHolder) listItemArtistView.getTag();
         }
 
         MyArtist artist = data[position];
         holder.artistName.setText(artist.artistName);
         holder.image.setImageResource(artist.artistImageIndex);
 
-        return listItemView;
+        return listItemArtistView;
 
     }
 

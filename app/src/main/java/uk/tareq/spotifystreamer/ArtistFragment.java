@@ -1,6 +1,7 @@
 package uk.tareq.spotifystreamer;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -94,8 +95,14 @@ public class ArtistFragment extends Fragment {
         mArtistListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String artist = mArtistAdapter.getItem(position - 1).name;
-                Log.i(LOG_TAG, artist);
+                String artistId = mArtistAdapter.getItem(position - 1).id;
+
+                Log.i(LOG_TAG, artistId);
+                Intent intent = new Intent(getActivity(),
+                        TrackActivity.class).putExtra(Intent.EXTRA_TEXT, id);
+
+                startActivity(intent);
+
 
             }
         });

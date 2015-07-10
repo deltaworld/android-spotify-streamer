@@ -9,18 +9,22 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
+
+import kaaes.spotify.webapi.android.models.Artist;
 
 /**
  * Created: by Tareq Fadel on 06/07/15.
  * Custom ArrayAdapter utilising the MyArtist Class
  */
-public class ArtistAdapter extends ArrayAdapter<MyArtist> {
+public class ArtistAdapter extends ArrayAdapter<Artist> {
 
     Context context;
     int layoutResourceId;
-    List<MyArtist> data = null;
-    private LayoutInflater mInflater;
+    List<Artist> data = null;
+
 
     /**
      * Constructor for the Array adapter
@@ -29,16 +33,12 @@ public class ArtistAdapter extends ArrayAdapter<MyArtist> {
      * @param layoutResourceId Layout ID that the adapter
      * @param data             to include the MyArtist data
      */
-    public ArtistAdapter(Context context, int layoutResourceId, List<MyArtist> data) {
+    public ArtistAdapter(Context context, int layoutResourceId, List<Artist> data) {
         super(context, layoutResourceId, data);
 
         this.context = context;
         this.layoutResourceId = layoutResourceId;
         this.data = data;
-
-        // Have layout view inflated in Adapter for image caching and pre-loading with Picasso
-        // getContext of current activity where the adapter is applied (in this case in fragment).
-        mInflater = LayoutInflater.from(getContext());
     }
 
     /**
@@ -68,13 +68,23 @@ public class ArtistAdapter extends ArrayAdapter<MyArtist> {
             holder = (ArtistHolder) listItemArtistView.getTag();
         }
         //Get the data at the associated position
-        MyArtist artist = getItem(position);
+        Artist artist = getItem(position);
 
-        holder.artistName.setText(artist.artistName);
-        holder.image.setImageResource(artist.artistImageIndex);
+        holder.artistName.setText(artist.name);
+
+        // Check if Artist has image
+
+        if (!artist.images.isEmpty()) {
+            // Get last image (smallest size) url
+            String artistImageUrl = artist.images.get(artist.images.size() - 1).url;
+
+            // Use Picasso to cache image
+            // Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(imageView);
+            // http://square.github.io/picasso/
+            Picasso.with(context).load(artistImageUrl).into(holder.image);
+        }
 
         return listItemArtistView;
-
     }
 
     static class ArtistHolder {

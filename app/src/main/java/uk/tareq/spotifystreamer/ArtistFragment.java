@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -89,6 +90,15 @@ public class ArtistFragment extends Fragment {
 
         // Add Adapter (containing data) to the ListView
         mArtistListView.setAdapter(mArtistAdapter);
+
+        mArtistListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String artist = mArtistAdapter.getItem(position - 1).name;
+                Log.i(LOG_TAG, artist);
+
+            }
+        });
 
         // ActionListener for the search button on the EditText keyboard
         editText.setOnEditorActionListener(

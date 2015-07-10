@@ -1,10 +1,12 @@
 package uk.tareq.spotifystreamer;
 
+import kaaes.spotify.webapi.android.models.Artist;
+
 /**
  * Created by Tareq Fadel on 06/07/15.
  * Class defining artist details with the artist image and name.
  */
-public class MyArtist {
+public class MyArtist extends Artist {
     public int artistImageIndex;
     public String artistName;
     public String artistImageUrl;

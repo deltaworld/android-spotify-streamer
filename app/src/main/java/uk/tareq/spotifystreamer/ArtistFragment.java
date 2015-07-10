@@ -7,21 +7,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.ArtistsPager;
-import kaaes.spotify.webapi.android.models.Image;
 import retrofit.RetrofitError;
 
 /**
@@ -32,7 +25,6 @@ public class ArtistFragment extends Fragment {
     // Holds the ListView instance that derives the data from the adapter.
     private ListView mArtistListView;
     private ArtistAdapter mArtistAdapter;
-
 
     /**
      * Default constructor
@@ -49,23 +41,21 @@ public class ArtistFragment extends Fragment {
 
         super.onCreateView(inflater, container, savedInstanceState);
 
-        // Dummy data
-        MyArtist artist_data[] = {
-                new MyArtist(R.drawable.coldplay064, "ZZZColdplay", ""),
-                new MyArtist(R.drawable.karaokeelite064, "ZZZColdplay & Lele", ""),
-                new MyArtist(R.drawable.mailbox064, "ZZZColdplay & Rihanna", ""),
-                new MyArtist(R.drawable.princessofchina064, "ZZZVarious Artists - Coldplay Tribute", "")
-        };
-
-        ArrayList<MyArtist> artistDummyDataList = new ArrayList<>(Arrays.asList(artist_data));
-        mArtistAdapter = new ArtistAdapter(getActivity(), R.layout.list_item_artist, artistDummyDataList);
-
+        //Initialise variables
+        List<Artist> artistList = new ArrayList<>();
 
         // Inflate the rootView for the fragment, which includes the ListView element.
         View rootView = inflater.inflate(R.layout.fragment_artist, container, false);
 
-        // Add search Facility to EditText
+/*
+        // EditText for Artist Search
         final EditText editText = (EditText) rootView.findViewById(R.id.edit_text_search_artist);
+        String text = editText.getText().toString();
+*/
+
+        // Construct a new customArrayAdapter
+        mArtistAdapter = new ArtistAdapter(getActivity(), R.layout.list_item_artist,
+                artistList);
 
         // Create a View to hold the inflated artist search header
         View artistSearchView = getActivity().getLayoutInflater().inflate(
@@ -83,7 +73,7 @@ public class ArtistFragment extends Fragment {
         // Start ASync Task Thread
         final SearchSpotifyTask task = new SearchSpotifyTask();
 
-        // Causing BUG: #1: Error inflating class fragment, .onCreate(ArtistActivity.java:13)
+        // TODO: Causing BUG: #1: Error inflating class fragment, .onCreate(ArtistActivity.java:13)
 /*
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -100,7 +90,6 @@ public class ArtistFragment extends Fragment {
             }
         });
 */
-
         task.execute("coldplay");
         return rootView;
     }
@@ -108,7 +97,7 @@ public class ArtistFragment extends Fragment {
     /**
      * Class definition for fetching the Artist data asynchronously on a separate thread.
      */
-    public class SearchSpotifyTask extends AsyncTask<String, Void, List<MyArtist>> {
+    public class SearchSpotifyTask extends AsyncTask<String, Void, List<Artist>> {
 
         // Constant for debugging class definition
         private final String LOG_TAG = SearchSpotifyTask.class.getSimpleName();
@@ -120,10 +109,8 @@ public class ArtistFragment extends Fragment {
          * @return will return the network result
          */
         @Override
-        protected List<MyArtist> doInBackground(String... searchQuery) {
+        protected List<Artist> doInBackground(String... searchQuery) {
 
-            // data to be returned as result
-            List<MyArtist> artistData = new ArrayList<>();
 
             if (searchQuery == null || searchQuery[0].equals("")) {
                 return null;
@@ -146,69 +133,10 @@ public class ArtistFragment extends Fragment {
                      */
                     String artistName = searchQuery[0];
 
-
-                    // results of search as a <Artist> objects
-                    ArtistsPager results = spotifyService.searchArtists(artistName);
-
-                    // Store <Artist> objects in List by .artists.items
-                    List<Artist> artists = results.artists.items;
-
-
-                    // Loop through all artists to display name and image url
-                    for (int i = 0; i < artists.size(); i++) {
-                        String artistImageUrl = null;
-
-                        Artist artist = artists.get(i);
-                        // List all artist names
-                        Log.i(LOG_TAG, i + " " + artist.name);
-                        // TODO: use Picasso to cache images
-
-                        try {
-                            // Initialise variables
-                            int smallestImage;
-                            Image artistImage;
-                            Picasso p = Picasso.with(getActivity());
-                            ImageView imageView = null;
-
-                            // Artists may have more than one image, store images in list to extract
-                            List<Image> artistImages = artist.images;
-
-                            // Some artists do not have images, use if/else to exclude image url
-                            // extraction from the artists that do not have images.
-                            if (artist.images.size() != 0) {
-
-                                // get smallest size image from last image in the index
-                                smallestImage = artistImages.size() - 1;
-
-                                artistImage = artistImages.get(smallestImage);
-                                artistImageUrl = artistImage.url;
-
-                                //p.load(artistImageUrl).into(imageView);
-
-
-                                Log.i(LOG_TAG, smallestImage + " " + artistImageUrl + " " +
-                                        artistImage.width + " " + artistImage.height);
-                            } else {
-                                // If image is not found use an image placeholder
-                                // TODO: localise image resource.
-                                artistImageUrl = "http://www.londonnights.com/gfx/default/search_no_photo.png";
-
-                                //p.load(artistImageUrl).into(imageView);
-
-                                Log.i(LOG_TAG, "Artist has no image");
-                                Log.i(LOG_TAG, " " + artistImageUrl + " " + 64 + " " + 64);
-                            }
-
-                        } catch (ArrayIndexOutOfBoundsException e) {
-                            Log.e(LOG_TAG, e.getClass().getName());
-                            Log.e(LOG_TAG, e.getMessage());
-                        }
-                        artistData.add(new MyArtist(0, artist.name, artistImageUrl));
-                    }
-                    return artistData;
+                    // results of search as  List<Artist> objects
+                    return spotifyService.searchArtists(artistName).artists.items;
                 } catch (RetrofitError e) {
                     // If search Query not found then display toast
-                    Log.e(LOG_TAG, e.getClass().getName());
                     Log.e(LOG_TAG, e.getMessage());
                     return null;
                     // TODO: Add Toast Message to user that the search request is invalid.
@@ -226,21 +154,14 @@ public class ArtistFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(List<MyArtist> myArtists) {
-            super.onPostExecute(myArtists);
-            if (myArtists != null) {
-                for (MyArtist a : myArtists) {
-                    Log.i(LOG_TAG, "FROM POST: " + a.artistName + " " + a.artistImageUrl);
-                }
-
-                MyArtist[] array = myArtists.toArray(new MyArtist[myArtists.size()]);
-
-                // Empty the Adapter from the dummy data
+        protected void onPostExecute(List<Artist> artists) {
+            super.onPostExecute(artists);
+            if (artists != null) {
+                // Empty the Adapter from previous search
                 mArtistAdapter.clear();
 
                 // Add new data
-                mArtistAdapter.addAll(array);
-
+                mArtistAdapter.addAll(artists);
             }
         }
     }

@@ -1,5 +1,6 @@
 package uk.tareq.spotifystreamer;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,6 +28,7 @@ import retrofit.RetrofitError;
  */
 public class ArtistFragment extends Fragment {
 
+    private static final String LOG_TAG = ArtistFragment.class.getSimpleName();
     // Holds the ListView instance that derives the data from the adapter.
     private ListView mArtistListView;
     private ArtistAdapter mArtistAdapter;
@@ -34,6 +37,22 @@ public class ArtistFragment extends Fragment {
      * Default constructor
      */
     public ArtistFragment() {
+    }
+
+    /**
+     * Hides the soft keyboard when invoked
+     *
+     * @param activity the activity where the view has the keyboard.
+     */
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager)
+                activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        try {
+            inputMethodManager.hideSoftInputFromWindow(
+                    activity.getCurrentFocus().getWindowToken(), 0);
+        } catch (NullPointerException e) {
+            Log.e(LOG_TAG, e.getMessage());
+        }
     }
 
     @Override
@@ -50,11 +69,6 @@ public class ArtistFragment extends Fragment {
 
         // Inflate the rootView for the fragment, which includes the ListView element.
         View rootView = inflater.inflate(R.layout.fragment_artist, container, false);
-        View headerView = inflater.inflate(R.layout.header_artist_search, container, false);
-
-        // EditText for Artist Search
-        final EditText editText = (EditText) headerView.findViewById(R.id.edit_text_search_artist);
-
 
         // Construct a new customArrayAdapter
         mArtistAdapter = new ArtistAdapter(getActivity(), R.layout.list_item_artist,
@@ -63,6 +77,9 @@ public class ArtistFragment extends Fragment {
         // Create a View to hold the inflated artist search header
         View artistSearchView = getActivity().getLayoutInflater().inflate(
                 R.layout.header_artist_search, null);
+
+        // EditText for Artist Search
+        final EditText editText = (EditText) artistSearchView.findViewById(R.id.edit_text_search_artist);
 
         // Variable to hold the inflated ListView
         mArtistListView = (ListView) rootView.findViewById(R.id.list_view_artist);
@@ -73,26 +90,33 @@ public class ArtistFragment extends Fragment {
         // Add Adapter (containing data) to the ListView
         mArtistListView.setAdapter(mArtistAdapter);
 
-        // Start ASync Task Thread
-        final SearchSpotifyTask task = new SearchSpotifyTask();
+        // ActionListener for the search button on the EditText keyboard
+        editText.setOnEditorActionListener(
+                new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
+                        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                            String searchQuery = editText.getText().toString();
 
-        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    String searchQuery = editText.getText().toString();
-                    Log.i("TST", searchQuery);
-                    // Pass search query to AsyncTask
-                    task.execute(searchQuery);
+                            // Pass search query to AsyncTask
+                            try {
+                                if (!searchQuery.equals("")) { // make sure text is not empty
 
-                    return true;
+                                    editText.setText(""); // clear previous search query
+                                    new SearchSpotifyTask().execute(searchQuery); // run AsyncTask
+                                    hideSoftKeyboard(getActivity()); // hide keyboard
+                                    return true;
+                                }
+
+                            } catch (IllegalStateException e) {
+                                Log.e(LOG_TAG, e.getMessage());
+                            }
+                        }
+                        return false;
+                    }
                 }
-                return false;
-            }
-        });
-
-        task.execute("coldplay");
+        );
         return rootView;
     }
 

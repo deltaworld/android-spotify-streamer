@@ -99,7 +99,7 @@ public class ArtistFragment extends Fragment {
 
                 Log.i(LOG_TAG, artistId);
                 Intent intent = new Intent(getActivity(),
-                        TrackActivity.class).putExtra(Intent.EXTRA_TEXT, id);
+                        TrackActivity.class).putExtra(Intent.EXTRA_TEXT, artistId);
 
                 startActivity(intent);
 

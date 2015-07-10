@@ -17,7 +17,7 @@ import kaaes.spotify.webapi.android.models.Artist;
 
 /**
  * Created: by Tareq Fadel on 06/07/15.
- * Custom ArrayAdapter utilising the MyArtist Class
+ * Custom ArrayAdapter utilising the Artist Class
  */
 public class ArtistAdapter extends ArrayAdapter<Artist> {
 
@@ -25,13 +25,12 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     int layoutResourceId;
     List<Artist> data = null;
 
-
     /**
      * Constructor for the Array adapter
      *
      * @param context          is for the context of the activity
      * @param layoutResourceId Layout ID that the adapter
-     * @param data             to include the MyArtist data
+     * @param data             to include the Artist data
      */
     public ArtistAdapter(Context context, int layoutResourceId, List<Artist> data) {
         super(context, layoutResourceId, data);
@@ -73,15 +72,19 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
         holder.artistName.setText(artist.name);
 
         // Check if Artist has image
-
         if (!artist.images.isEmpty()) {
-            // Get last image (smallest size) url
-            String artistImageUrl = artist.images.get(artist.images.size() - 1).url;
+            // Get second from last image (smallest size) url
+            String artistImageUrl = artist.images.get(artist.images.size() - 2).url;
 
             // Use Picasso to cache image
             // Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(imageView);
             // http://square.github.io/picasso/
             Picasso.with(context).load(artistImageUrl).into(holder.image);
+
+        } else {
+            // Add blank imagePlaceholder to ArtistHolder
+            holder.image = new ImageView(context);
+            holder.image.setImageResource(R.drawable.nophoto);
         }
 
         return listItemArtistView;

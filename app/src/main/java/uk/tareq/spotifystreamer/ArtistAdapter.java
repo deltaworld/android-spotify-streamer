@@ -20,6 +20,7 @@ public class ArtistAdapter extends ArrayAdapter<MyArtist> {
     Context context;
     int layoutResourceId;
     List<MyArtist> data = null;
+    private LayoutInflater mInflater;
 
     /**
      * Constructor for the Array adapter
@@ -34,6 +35,10 @@ public class ArtistAdapter extends ArrayAdapter<MyArtist> {
         this.context = context;
         this.layoutResourceId = layoutResourceId;
         this.data = data;
+
+        // Have layout view inflated in Adapter for image caching and pre-loading with Picasso
+        // getContext of current activity where the adapter is applied (in this case in fragment).
+        mInflater = LayoutInflater.from(getContext());
     }
 
     /**

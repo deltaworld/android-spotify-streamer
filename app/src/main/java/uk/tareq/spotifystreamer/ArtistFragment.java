@@ -4,11 +4,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -71,6 +75,11 @@ public class ArtistFragment extends Fragment {
         // Inflate the rootView for the fragment, which includes the ListView element.
         View rootView = inflater.inflate(R.layout.fragment_artist, container, false);
 
+        // Add search Facility to EditText
+        final EditText editText = (EditText) rootView.findViewById(R.id.edit_text_search_artist);
+
+
+
         // Create a View to hold the inflated artist search header
         View artistSearchView = getActivity().getLayoutInflater().inflate(
                 R.layout.header_artist_search, null);
@@ -85,11 +94,25 @@ public class ArtistFragment extends Fragment {
         mArtistListView.setAdapter(mArtistAdapter);
 
         // Start ASync Task Thread
-        SearchSpotifyTask task = new SearchSpotifyTask();
+        final SearchSpotifyTask task = new SearchSpotifyTask();
 
-        // Pass search query to AsyncTask
-        task.execute("Coldplay");
+        // Causing BUG: #1: Error inflating class fragment, .onCreate(ArtistActivity.java:13)
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    String searchQuery = editText.getText().toString();
 
+                    // Pass search query to AsyncTask
+                    task.execute(searchQuery);
+
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        task.execute("coldplay");
         return rootView;
     }
 

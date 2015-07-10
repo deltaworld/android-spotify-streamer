@@ -7,6 +7,7 @@
     <EditText
         android:id="@+id/edit_text_search_artist"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:imeOptions="actionSearch"/>
 
 </LinearLayout>

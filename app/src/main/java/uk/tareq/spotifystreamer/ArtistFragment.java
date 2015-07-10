@@ -4,15 +4,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -60,25 +57,15 @@ public class ArtistFragment extends Fragment {
                 new MyArtist(R.drawable.princessofchina064, "ZZZVarious Artists - Coldplay Tribute", "")
         };
 
-        //ArrayList<String> lst = new ArrayList<String>(Arrays.asList(array));
-        //final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-        //        android.R.layout.simple_list_item_1, lst);
         ArrayList<MyArtist> artistDummyDataList = new ArrayList<>(Arrays.asList(artist_data));
         mArtistAdapter = new ArtistAdapter(getActivity(), R.layout.list_item_artist, artistDummyDataList);
 
-        // Create an ArtistAdapter instance
-        /*mArtistAdapter = new ArtistAdapter(
-                getActivity(), // uses current activity
-                R.layout.list_item_artist, // Use the layout for each artist showing image and name
-                artist_data); // load the data into the adapter.
-*/
+
         // Inflate the rootView for the fragment, which includes the ListView element.
         View rootView = inflater.inflate(R.layout.fragment_artist, container, false);
 
         // Add search Facility to EditText
         final EditText editText = (EditText) rootView.findViewById(R.id.edit_text_search_artist);
-
-
 
         // Create a View to hold the inflated artist search header
         View artistSearchView = getActivity().getLayoutInflater().inflate(
@@ -97,6 +84,7 @@ public class ArtistFragment extends Fragment {
         final SearchSpotifyTask task = new SearchSpotifyTask();
 
         // Causing BUG: #1: Error inflating class fragment, .onCreate(ArtistActivity.java:13)
+/*
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -111,6 +99,7 @@ public class ArtistFragment extends Fragment {
                 return false;
             }
         });
+*/
 
         task.execute("coldplay");
         return rootView;

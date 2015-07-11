@@ -69,7 +69,7 @@ public class TrackAdapter extends ArrayAdapter<MyTrack> {
         //Get the data at the associated position
         MyTrack track = getItem(position);
 
-        holder.trackName.setText(track.name);
+        holder.trackName.setText(track.trackName);
         holder.albumName.setText(track.albumName);
 
         // Check if Track has image

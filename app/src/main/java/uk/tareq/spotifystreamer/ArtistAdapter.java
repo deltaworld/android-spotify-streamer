@@ -72,6 +72,7 @@ public class ArtistAdapter extends ArrayAdapter<MyArtist> {
         // Check if Artist has image
         if (!artist.artistUrl.equals("")) {
             Picasso.with(mContext).load(artist.artistUrl).into(holder.image);
+
         } else {
             // Add blank imagePlaceholder to ArtistHolder
             holder.image = new ImageView(mContext);

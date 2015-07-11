@@ -175,6 +175,7 @@ public class ArtistActivityFragment extends Fragment {
 
                                         editText.setText(""); // clear previous search query
                                         // run AsyncTask
+                                        mArtistAdapter.clear();
                                         new SearchSpotifyTask().execute(searchQuery);
 
                                         hideSoftKeyboard(getActivity()); // hide keyboard

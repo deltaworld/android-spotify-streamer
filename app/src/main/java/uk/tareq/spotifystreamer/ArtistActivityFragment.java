@@ -267,7 +267,7 @@ public class ArtistActivityFragment extends Fragment {
 
                 if (mArtistListView.getCount() < 2) {
                     Toast toast = Toast.makeText(getActivity(),
-                            "Artist Not found. Try again",
+                            "Artist Not found. Refine your search and try again",
                             Toast.LENGTH_LONG);
                     toast.show();
                 }

@@ -1,21 +1,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+              android:layout_width="match_parent"
+              android:layout_height="110dp"
+              android:orientation="horizontal"
+              android:paddingBottom="10dp"
+              android:paddingTop="10dp">
 
     <ImageView
         android:id="@+id/list_item_artist_imageview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_gravity="center_vertical"
+        android:minHeight="?android:attr/listPreferredItemHeight"
+        android:paddingRight="10dp"
         android:src="@drawable/nophoto"/>
 
     <TextView
         android:id="@+id/list_item_artist_textview"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:minHeight="?android:attr/listPreferredItemHeight" />
+        android:minHeight="?android:attr/listPreferredItemHeight"
+        android:textSize="16sp"/>
 </LinearLayout>
 

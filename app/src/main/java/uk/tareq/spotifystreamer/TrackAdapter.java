@@ -2,6 +2,7 @@ package uk.tareq.spotifystreamer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import kaaes.spotify.webapi.android.models.Track;
  */
 public class TrackAdapter extends ArrayAdapter<Track> {
 
+    private final String LOG_TAG = getClass().getSimpleName();
     Context context;
     int layoutResourceId;
     List<Track> data = null;
@@ -28,7 +30,7 @@ public class TrackAdapter extends ArrayAdapter<Track> {
     /**
      * Constructor for the Array adapter
      *
-     * @param context          is for the context of the activity
+     * @param context          is for the mContext of the activity
      * @param layoutResourceId Layout ID that the adapter
      * @param data             to include the Track data
      */
@@ -77,9 +79,9 @@ public class TrackAdapter extends ArrayAdapter<Track> {
         if (!track.album.images.isEmpty()) {
             // Get second from last image (smallest size) url
             String trackImageUrl = track.album.images.get(track.album.images.size() - 2).url;
-
+            Log.i(LOG_TAG, "TrackURL: " + trackImageUrl);
             // Use Picasso to cache image
-            // Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(imageView);
+            // Picasso.with(mContext).load("http://i.imgur.com/DvpvklR.png").into(imageView);
             // http://square.github.io/picasso/
             Picasso.with(context).load(trackImageUrl).into(holder.image);
 

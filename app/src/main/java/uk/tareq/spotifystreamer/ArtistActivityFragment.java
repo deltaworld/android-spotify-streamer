@@ -1,7 +1,10 @@
 package uk.tareq.spotifystreamer;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +53,25 @@ public class ArtistActivityFragment extends Fragment {
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager)
                 activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+
         try {
             inputMethodManager.hideSoftInputFromWindow(
                     activity.getCurrentFocus().getWindowToken(), 0);
         } catch (NullPointerException e) {
             Log.e(LOG_TAG, e.getMessage());
         }
+    }
+
+    /**
+     * Checks to see if there is a network connection
+     *
+     * @return boolean response to a valid network connection.
+     */
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override
@@ -67,7 +84,7 @@ public class ArtistActivityFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         //Initialise variables
-        List<Artist> artistList = new ArrayList<>();
+        List<MyArtist> artistList = new ArrayList<>();
 
         // Inflate the rootView for the fragment, which includes the ListView element.
         View rootView = inflater.inflate(R.layout.fragment_artist, container, false);
@@ -95,7 +112,7 @@ public class ArtistActivityFragment extends Fragment {
         mArtistListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String artistId = mArtistAdapter.getItem(position - 1).id;
+                String artistId = mArtistAdapter.getItem(position - 1).artistId;
 
                 Log.i(LOG_TAG, artistId);
                 Intent intent = new Intent(getActivity(),
@@ -115,11 +132,27 @@ public class ArtistActivityFragment extends Fragment {
 
                             // Pass search query to AsyncTask
                             try {
-                                if (!searchQuery.equals("")) { // make sure text is not empty
+                                if (isNetworkAvailable()) {
+                                    if (!searchQuery.equals("")) { // make sure text is not empty
 
-                                    editText.setText(""); // clear previous search query
-                                    new SearchSpotifyTask().execute(searchQuery); // run AsyncTask
-                                    hideSoftKeyboard(getActivity()); // hide keyboard
+                                        editText.setText(""); // clear previous search query
+
+                                        new SearchSpotifyTask().execute(searchQuery); // run AsyncTask
+                                        hideSoftKeyboard(getActivity()); // hide keyboard
+                                        return true;
+                                    } else {
+                                        Toast toast = Toast.makeText(getActivity(),
+                                                "Enter an Artist name",
+                                                Toast.LENGTH_SHORT);
+                                        toast.show();
+                                        return true;
+                                    }
+
+                                } else {
+                                    Toast toast = Toast.makeText(getActivity(),
+                                            "Check you have a valid network connection",
+                                            Toast.LENGTH_SHORT);
+                                    toast.show();
                                     return true;
                                 }
 
@@ -137,7 +170,7 @@ public class ArtistActivityFragment extends Fragment {
     /**
      * Class definition for fetching the Artist data asynchronously on a separate thread.
      */
-    public class SearchSpotifyTask extends AsyncTask<String, Void, List<Artist>> {
+    public class SearchSpotifyTask extends AsyncTask<String, Void, List<MyArtist>> {
 
         // Constant for debugging class definition
         private final String LOG_TAG = SearchSpotifyTask.class.getSimpleName();
@@ -149,7 +182,7 @@ public class ArtistActivityFragment extends Fragment {
          * @return will return the network result
          */
         @Override
-        protected List<Artist> doInBackground(String... searchQuery) {
+        protected List<MyArtist> doInBackground(String... searchQuery) {
 
 
             if (searchQuery == null || searchQuery[0].equals("")) {
@@ -172,29 +205,24 @@ public class ArtistActivityFragment extends Fragment {
                      * @see <a href="https://developer.spotify.com/web-api/search-item/">Search for an Item</a>
                      */
                     String artistName = searchQuery[0];
-
-                    // results of search as  List<Artist> objects
-                    return spotifyService.searchArtists(artistName).artists.items;
+                    List<Artist> spArtist = spotifyService.searchArtists(artistName).artists.items;
+                    List<MyArtist> myArtists = new ArrayList<>();
+                    for (Artist art : spArtist) {
+                        myArtists.add(new MyArtist(art));
+                    }
+                    // results of search as  List<MyArtist> objects
+                    return myArtists;
                 } catch (RetrofitError e) {
                     // If search Query not found then display toast
                     Log.e(LOG_TAG, e.getMessage());
                     return null;
-                    // TODO: Add Toast Message to user that the search request is invalid.
 
-/*                  -- Toast Message --
-                    Context context = getActivity();
-                    CharSequence text = "Could not find artist";
-                    int duration = Toast.LENGTH_SHORT;
-
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-*/
                 }
             }
         }
 
         @Override
-        protected void onPostExecute(List<Artist> artists) {
+        protected void onPostExecute(List<MyArtist> artists) {
             super.onPostExecute(artists);
             if (artists != null) {
                 // Empty the Adapter from previous search

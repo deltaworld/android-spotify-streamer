@@ -7,28 +7,20 @@ import kaaes.spotify.webapi.android.models.Artist;
  * Class defining artist details with the artist image and name.
  */
 public class MyArtist extends Artist {
-    public int artistImageIndex;
     public String artistName;
-    public String artistImageUrl;
+    public String artistUrl;
+    public String artistId;
 
     /**
-     * Default constructor
+     * Alternate constructor that constructs an artist instance
      */
-    public MyArtist() {
+    public MyArtist(Artist artist) {
         super();
+        this.artistName = artist.name;
+        this.artistUrl = "";
+        this.artistId = artist.id;
+        if (!artist.images.isEmpty()) {
+            this.artistUrl = artist.images.get(artist.images.size() - 2).url;
+        }
     }
-
-    /**
-     * Alternate constructor that constructs an artist instance.
-     *
-     * @param artistImageIndex holds the name of the drawable image
-     * @param artistName       Artists name
-     */
-    public MyArtist(int artistImageIndex, String artistName, String artistImageUrl) {
-        super();
-        this.artistImageIndex = artistImageIndex;
-        this.artistName = artistName;
-        this.artistImageUrl = artistImageUrl;
-    }
-
 }

@@ -13,29 +13,27 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import kaaes.spotify.webapi.android.models.Artist;
-
 /**
  * Created: by Tareq Fadel on 06/07/15.
  * Custom ArrayAdapter utilising the Artist Class
  */
-public class ArtistAdapter extends ArrayAdapter<Artist> {
+public class ArtistAdapter extends ArrayAdapter<MyArtist> {
 
-    Context context;
+    Context mContext;
     int layoutResourceId;
-    List<Artist> data = null;
+    List<MyArtist> data = null;
 
     /**
      * Constructor for the Array adapter
      *
-     * @param context          is for the context of the activity
+     * @param context          is for the mContext of the activity
      * @param layoutResourceId Layout ID that the adapter
      * @param data             to include the Artist data
      */
-    public ArtistAdapter(Context context, int layoutResourceId, List<Artist> data) {
+    public ArtistAdapter(Context context, int layoutResourceId, List<MyArtist> data) {
+        //super(context, layoutResourceId, data);
         super(context, layoutResourceId, data);
-
-        this.context = context;
+        this.mContext = context;
         this.layoutResourceId = layoutResourceId;
         this.data = data;
     }
@@ -55,7 +53,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
         ArtistHolder holder;
 
         if (listItemArtistView == null) {
-            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
             listItemArtistView = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new ArtistHolder();
@@ -67,23 +65,16 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
             holder = (ArtistHolder) listItemArtistView.getTag();
         }
         //Get the data at the associated position
-        Artist artist = getItem(position);
+        MyArtist artist = getItem(position);
 
-        holder.artistName.setText(artist.name);
+        holder.artistName.setText(artist.artistName);
 
         // Check if Artist has image
-        if (!artist.images.isEmpty()) {
-            // Get second from last image (smallest size) url
-            String artistImageUrl = artist.images.get(artist.images.size() - 2).url;
-
-            // Use Picasso to cache image
-            // Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(imageView);
-            // http://square.github.io/picasso/
-            Picasso.with(context).load(artistImageUrl).into(holder.image);
-
+        if (!artist.artistUrl.equals("")) {
+            Picasso.with(mContext).load(artist.artistUrl).into(holder.image);
         } else {
             // Add blank imagePlaceholder to ArtistHolder
-            holder.image = new ImageView(context);
+            holder.image = new ImageView(mContext);
             holder.image.setImageResource(R.drawable.nophoto);
         }
 

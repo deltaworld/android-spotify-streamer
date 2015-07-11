@@ -37,10 +37,11 @@ public class ArtistActivityFragment extends Fragment {
 
     private static final String LOG_TAG = ArtistActivityFragment.class.getSimpleName();
 
-    private ArrayList<MyArtist> artistList = new ArrayList<>();
+    private ArrayList<MyArtist> mArtistList = new ArrayList<>();
     // Holds the ListView instance that derives the data from the adapter.
     private ListView mArtistListView;
     private ArtistAdapter mArtistAdapter;
+
     /**
      * Default constructor
      */
@@ -67,19 +68,21 @@ public class ArtistActivityFragment extends Fragment {
     /**
      * custom onSaveInstanceState, checks if the adapter is populated. If it is, creates a
      * Parcelable Array and copies all ListView items from the adapter into the Parcelable
-     * @param outState Bundle that
+     * @param outState Bundle that places the Parcelable array with the key
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (mArtistAdapter.getCount() > 0) {
+        if (mArtistAdapter.getCount() > 0) { // check if adapter contains items
+            // Construct a new Parcelable Array the same size as Custom ArrayAdapter
             Parcelable[] parcelables = new Parcelable[mArtistAdapter.getCount()];
+
+            // Loop through the items in the array adapter and place each into the parcelables array
             for (int i = 0; i < mArtistAdapter.getCount(); i++) {
                 parcelables[i] = mArtistAdapter.getItem(i);
             }
+            // put the parcelable array with the key "artist" ready for retrieval tempStorage
             outState.putParcelableArray("artist", parcelables);
         }
-
-
         super.onSaveInstanceState(outState);
     }
 
@@ -89,37 +92,38 @@ public class ArtistActivityFragment extends Fragment {
      * @return boolean response to a valid network connection.
      */
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    @Override
+    /**
+     * Class definition for fetching the Artist data asynchronously on a separate thread.
+     */
+
     /**
      * When the fragment View is created inflation required.
      */
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         super.onCreateView(inflater, container, savedInstanceState);
 
-        //Initialise variables
-
-
         // Inflate the rootView for the fragment, which includes the ListView element.
         View rootView = inflater.inflate(R.layout.fragment_artist, container, false);
 
         // Construct a new customArrayAdapter
-        mArtistAdapter = new ArtistAdapter(getActivity(), R.layout.list_item_artist,
-                artistList);
+        mArtistAdapter = new ArtistAdapter(getActivity(), R.layout.list_item_artist, mArtistList);
 
         // Create a View to hold the inflated artist search header
         View artistSearchView = getActivity().getLayoutInflater().inflate(
                 R.layout.header_artist_search, null);
 
         // EditText for Artist Search
-        final EditText editText = (EditText) artistSearchView.findViewById(R.id.edit_text_search_artist);
+        final EditText editText = (EditText) artistSearchView
+                .findViewById(R.id.edit_text_search_artist);
 
         // Variable to hold the inflated ListView
         mArtistListView = (ListView) rootView.findViewById(R.id.list_view_artist);
@@ -131,9 +135,14 @@ public class ArtistActivityFragment extends Fragment {
         mArtistListView.setAdapter(mArtistAdapter);
 
         // Parcelables section
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null) { // check that there is a savedInstanceState
+
+            // Get the parcelables from the savedInstanceState with the key "artist" and store it in
+            // a Parcelable Array
             Parcelable[] parcelables = savedInstanceState.getParcelableArray("artist");
-            if (parcelables != null) {
+
+            if (parcelables != null) { // run if parcelables contains items
+                // for each item in parcelable add it back to the custom artist array adapter
                 for (Parcelable parcelable : parcelables)
                     mArtistAdapter.add(((MyArtist) parcelable));
             }
@@ -144,7 +153,6 @@ public class ArtistActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String artistId = mArtistAdapter.getItem(position - 1).artistId;
 
-                Log.i(LOG_TAG, artistId);
                 Intent intent = new Intent(getActivity(),
                         TrackActivity.class).putExtra(Intent.EXTRA_TEXT, artistId);
                 startActivity(intent);
@@ -166,8 +174,8 @@ public class ArtistActivityFragment extends Fragment {
                                     if (!searchQuery.equals("")) { // make sure text is not empty
 
                                         editText.setText(""); // clear previous search query
-
-                                        new SearchSpotifyTask().execute(searchQuery); // run AsyncTask
+                                        // run AsyncTask
+                                        new SearchSpotifyTask().execute(searchQuery);
 
                                         hideSoftKeyboard(getActivity()); // hide keyboard
                                         editText.clearFocus();
@@ -199,9 +207,6 @@ public class ArtistActivityFragment extends Fragment {
     }
 
 
-    /**
-     * Class definition for fetching the Artist data asynchronously on a separate thread.
-     */
     public class SearchSpotifyTask extends AsyncTask<String, Void, List<MyArtist>> {
 
         // Constant for debugging class definition
@@ -210,47 +215,42 @@ public class ArtistActivityFragment extends Fragment {
         /**
          * The method that performs a separate network call to retrieve the artist data.
          *
-         * @param searchQuery the parameters here are set to Void as no required paramters at this stage.
+         * @param searchQuery the parameters here are set to Void as no required parameters at this
+         *                    stage.
          * @return will return the network result
          */
         @Override
         protected List<MyArtist> doInBackground(String... searchQuery) {
 
-
             if (searchQuery == null || searchQuery[0].equals("")) {
                 return null;
-            } else {
+            } else try {
+                // Spotify Web Api Integration
+                // Instance class of Spotify Api to use the service
+                SpotifyApi spotifyApi = new SpotifyApi();
 
-                try {
-                    // Spotify Web Api Integration
+                // From the SpotifyApi run the getService method
+                SpotifyService spotifyService = spotifyApi.getService();
 
-                    // Instance class of Spotify Api to use the service
-                    SpotifyApi spotifyApi = new SpotifyApi();
-
-                    // From the SpotifyApi run the getService method
-                    SpotifyService spotifyService = spotifyApi.getService();
-
-                    /**
-                     * Get Spotify catalog information about artists that match a keyword string.
-                     * String: The search query's keywords (and optional field filters and operators),
-                     * for example "roadhouse+blues"
-                     * @see <a href="https://developer.spotify.com/web-api/search-item/">Search for an Item</a>
-                     */
-                    String artistName = searchQuery[0];
-                    List<Artist> spArtist = spotifyService.searchArtists(artistName).artists.items;
-                    List<MyArtist> myArtists = new ArrayList<>();
-                    for (Artist art : spArtist) {
-                        myArtists.add(new MyArtist(art));
-                    }
-
-                    // results of search as  List<MyArtist> objects
-                    return myArtists;
-                } catch (RetrofitError e) {
-                    // If search Query not found then display toast
-                    Log.e(LOG_TAG, e.getMessage());
-                    return null;
-
+                /**
+                 * Get Spotify catalog information about artists that match a keyword string.
+                 * String: The search query's keywords (and optional field filters and operators),
+                 * for example "roadhouse+blues"
+                 * @see <a href="https://developer.spotify.com/web-api/search-item/">Search for an Item</a>
+                 */
+                String artistName = searchQuery[0];
+                List<Artist> spArtist = spotifyService.searchArtists(artistName).artists.items;
+                List<MyArtist> myArtists = new ArrayList<>();
+                for (Artist art : spArtist) {
+                    myArtists.add(new MyArtist(art));
                 }
+
+                // results of search as  List<MyArtist> objects
+                return myArtists;
+            } catch (RetrofitError e) {
+                // If search Query not found then display toast
+                Log.e(LOG_TAG, e.getMessage());
+                return null;
             }
         }
 
@@ -263,14 +263,13 @@ public class ArtistActivityFragment extends Fragment {
 
                 // Add new data
                 mArtistAdapter.addAll(artists);
-                Log.i(LOG_TAG, "LIST VIEW COUNT: " + mArtistListView.getCount());
+
                 if (mArtistListView.getCount() < 2) {
                     Toast toast = Toast.makeText(getActivity(),
                             "Artist Not found. Try again",
                             Toast.LENGTH_LONG);
                     toast.show();
                 }
-
             }
         }
     }

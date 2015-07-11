@@ -14,7 +14,6 @@ public class TrackActivity extends AppCompatActivity {
         setContentView(R.layout.activity_track);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

@@ -22,7 +22,6 @@ import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
 import retrofit.RetrofitError;
 
-
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -42,6 +41,7 @@ public class TrackActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
+        // Get intent from ArtistActivity
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
             mArtistId = intent.getStringExtra(Intent.EXTRA_TEXT);
@@ -51,16 +51,14 @@ public class TrackActivityFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_track, container, false);
 
-        mTrackAdapter = new TrackAdapter(getActivity(), R.layout.list_item_track,
-                trackList);
-
+        // After view has been inflated handle the MVC
+        mTrackAdapter = new TrackAdapter(getActivity(), R.layout.list_item_track, trackList);
         mTrackListView = (ListView) rootView.findViewById(R.id.list_view_tracks);
-
         mTrackListView.setAdapter(mTrackAdapter);
-        new Top10TrackTask().execute(mArtistId);
+
+        new Top10TrackTask().execute(mArtistId); // run AsyncTask
 
         return rootView;
-
     }
 
     public class Top10TrackTask extends AsyncTask<String, Void, List<MyTrack>> {
@@ -70,22 +68,24 @@ public class TrackActivityFragment extends Fragment {
 
             if (artistId == null || artistId[0].equals("")) {
                 return null;
-            } else {
-                try {
-                    SpotifyApi spotifyApi = new SpotifyApi();
-                    SpotifyService spotifyService = spotifyApi.getService();
-                    Map<String, Object> options = new HashMap<>();
-                    options.put(SpotifyService.COUNTRY, Locale.getDefault().getCountry());
-                    Tracks topTracks = spotifyService.getArtistTopTrack(artistId[0], options);
+            } else try {
+                // Spotify Web Api implementation
+                SpotifyApi spotifyApi = new SpotifyApi();
+                SpotifyService spotifyService = spotifyApi.getService();
 
-                    List<MyTrack> myTracks = new ArrayList<>();
-                    for (Track track : topTracks.tracks) {
-                        myTracks.add(new MyTrack(track));
-                    }
-                    return myTracks;
-                } catch (RetrofitError e) {
-                    Log.e(LOG_TAG, "Error here: " + e.getMessage());
+                // Get default country locale
+                Map<String, Object> options = new HashMap<>();
+                options.put(SpotifyService.COUNTRY, Locale.getDefault().getCountry());
+
+                Tracks topTracks = spotifyService.getArtistTopTrack(artistId[0], options);
+
+                List<MyTrack> myTracks = new ArrayList<>();
+                for (Track track : topTracks.tracks) {
+                    myTracks.add(new MyTrack(track));
                 }
+                return myTracks;
+            } catch (RetrofitError e) {
+                Log.e(LOG_TAG, "Error here: " + e.getMessage());
             }
             return null;
         }

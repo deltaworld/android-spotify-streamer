@@ -1,12 +1,24 @@
 package uk.tareq.spotifystreamer;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import kaaes.spotify.webapi.android.models.Artist;
 
 /**
  * Created by Tareq Fadel on 06/07/15.
  * Class defining artist details with the artist image and name.
  */
-public class MyArtist extends Artist {
+public class MyArtist implements Parcelable {
+    public static final Parcelable.Creator<MyArtist> CREATOR = new Parcelable.Creator<MyArtist>() {
+        public MyArtist createFromParcel(Parcel source) {
+            return new MyArtist(source);
+        }
+
+        public MyArtist[] newArray(int size) {
+            return new MyArtist[size];
+        }
+    };
     public String artistName;
     public String artistUrl;
     public String artistId;
@@ -22,5 +34,23 @@ public class MyArtist extends Artist {
         if (!artist.images.isEmpty()) {
             this.artistUrl = artist.images.get(artist.images.size() - 2).url;
         }
+    }
+
+    protected MyArtist(Parcel in) {
+        this.artistName = in.readString();
+        this.artistUrl = in.readString();
+        this.artistId = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.artistName);
+        dest.writeString(this.artistUrl);
+        dest.writeString(this.artistId);
     }
 }

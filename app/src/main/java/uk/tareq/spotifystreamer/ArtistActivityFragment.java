@@ -35,6 +35,7 @@ import retrofit.RetrofitError;
 public class ArtistActivityFragment extends Fragment {
 
     private static final String LOG_TAG = ArtistActivityFragment.class.getSimpleName();
+    List<MyArtist> artistList = new ArrayList<>();
     // Holds the ListView instance that derives the data from the adapter.
     private ListView mArtistListView;
     private ArtistAdapter mArtistAdapter;
@@ -62,6 +63,14 @@ public class ArtistActivityFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (artistList != null) {
+            outState.putParcelableArrayList("artistList", artistList);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
     /**
      * Checks to see if there is a network connection
      *
@@ -84,7 +93,7 @@ public class ArtistActivityFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         //Initialise variables
-        List<MyArtist> artistList = new ArrayList<>();
+
 
         // Inflate the rootView for the fragment, which includes the ListView element.
         View rootView = inflater.inflate(R.layout.fragment_artist, container, false);
@@ -138,7 +147,9 @@ public class ArtistActivityFragment extends Fragment {
                                         editText.setText(""); // clear previous search query
 
                                         new SearchSpotifyTask().execute(searchQuery); // run AsyncTask
+
                                         hideSoftKeyboard(getActivity()); // hide keyboard
+                                        editText.clearFocus();
                                         return true;
                                     } else {
                                         Toast toast = Toast.makeText(getActivity(),
@@ -147,7 +158,6 @@ public class ArtistActivityFragment extends Fragment {
                                         toast.show();
                                         return true;
                                     }
-
                                 } else {
                                     Toast toast = Toast.makeText(getActivity(),
                                             "Check you have a valid network connection",
@@ -166,6 +176,7 @@ public class ArtistActivityFragment extends Fragment {
         );
         return rootView;
     }
+
 
     /**
      * Class definition for fetching the Artist data asynchronously on a separate thread.
@@ -210,6 +221,7 @@ public class ArtistActivityFragment extends Fragment {
                     for (Artist art : spArtist) {
                         myArtists.add(new MyArtist(art));
                     }
+
                     // results of search as  List<MyArtist> objects
                     return myArtists;
                 } catch (RetrofitError e) {
@@ -230,6 +242,14 @@ public class ArtistActivityFragment extends Fragment {
 
                 // Add new data
                 mArtistAdapter.addAll(artists);
+                Log.i(LOG_TAG, "LIST VIEW COUNT: " + mArtistListView.getCount());
+                if (mArtistListView.getCount() < 2) {
+                    Toast toast = Toast.makeText(getActivity(),
+                            "Artist Not found. Try again",
+                            Toast.LENGTH_LONG);
+                    toast.show();
+                }
+
             }
         }
     }

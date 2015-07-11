@@ -79,14 +79,7 @@ public class TrackActivityFragment extends Fragment {
                     options.put(SpotifyService.COUNTRY, Locale.getDefault().getCountry());
                     Tracks topTracks = spotifyService.getArtistTopTrack(artistId[0], options);
 
-                    List<Track> trackList = new ArrayList<>();
-                    for (Track track : topTracks.tracks) {
-                        String trackName = track.name;
-                        System.out.println(trackName);
-                        trackList.add(track);
-                    }
-
-                    return trackList;
+                    return topTracks.tracks;
                 } catch (RetrofitError e) {
                     Log.e(LOG_TAG, "Error here: " + e.getMessage());
                 }

@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -35,11 +36,11 @@ import retrofit.RetrofitError;
 public class ArtistActivityFragment extends Fragment {
 
     private static final String LOG_TAG = ArtistActivityFragment.class.getSimpleName();
-    List<MyArtist> artistList = new ArrayList<>();
+
+    private ArrayList<MyArtist> artistList = new ArrayList<>();
     // Holds the ListView instance that derives the data from the adapter.
     private ListView mArtistListView;
     private ArtistAdapter mArtistAdapter;
-
     /**
      * Default constructor
      */
@@ -63,11 +64,22 @@ public class ArtistActivityFragment extends Fragment {
         }
     }
 
+    /**
+     * custom onSaveInstanceState, checks if the adapter is populated. If it is, creates a
+     * Parcelable Array and copies all ListView items from the adapter into the Parcelable
+     * @param outState Bundle that
+     */
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (artistList != null) {
-            outState.putParcelableArrayList("artistList", artistList);
+        if (mArtistAdapter.getCount() > 0) {
+            Parcelable[] parcelables = new Parcelable[mArtistAdapter.getCount()];
+            for (int i = 0; i < mArtistAdapter.getCount(); i++) {
+                parcelables[i] = mArtistAdapter.getItem(i);
+            }
+            outState.putParcelableArray("artist", parcelables);
         }
+
+
         super.onSaveInstanceState(outState);
     }
 
@@ -117,6 +129,15 @@ public class ArtistActivityFragment extends Fragment {
 
         // Add Adapter (containing data) to the ListView
         mArtistListView.setAdapter(mArtistAdapter);
+
+        // Parcelables section
+        if (savedInstanceState != null) {
+            Parcelable[] parcelables = savedInstanceState.getParcelableArray("artist");
+            if (parcelables != null) {
+                for (Parcelable parcelable : parcelables)
+                    mArtistAdapter.add(((MyArtist) parcelable));
+            }
+        }
 
         mArtistListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

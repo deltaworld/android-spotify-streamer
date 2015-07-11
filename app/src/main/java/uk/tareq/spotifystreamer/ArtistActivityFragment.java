@@ -28,9 +28,9 @@ import retrofit.RetrofitError;
 /**
  * Fragment for the Artist search and display results
  */
-public class ArtistFragment extends Fragment {
+public class ArtistActivityFragment extends Fragment {
 
-    private static final String LOG_TAG = ArtistFragment.class.getSimpleName();
+    private static final String LOG_TAG = ArtistActivityFragment.class.getSimpleName();
     // Holds the ListView instance that derives the data from the adapter.
     private ListView mArtistListView;
     private ArtistAdapter mArtistAdapter;
@@ -38,7 +38,7 @@ public class ArtistFragment extends Fragment {
     /**
      * Default constructor
      */
-    public ArtistFragment() {
+    public ArtistActivityFragment() {
     }
 
     /**
@@ -100,10 +100,7 @@ public class ArtistFragment extends Fragment {
                 Log.i(LOG_TAG, artistId);
                 Intent intent = new Intent(getActivity(),
                         TrackActivity.class).putExtra(Intent.EXTRA_TEXT, artistId);
-
                 startActivity(intent);
-
-
             }
         });
 

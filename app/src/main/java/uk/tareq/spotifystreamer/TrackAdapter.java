@@ -2,7 +2,6 @@ package uk.tareq.spotifystreamer;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,30 +13,28 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import kaaes.spotify.webapi.android.models.Track;
-
 /**
  * Created: by Tareq Fadel on 06/07/15.
  * Custom ArrayAdapter utilising the Track Class
  */
-public class TrackAdapter extends ArrayAdapter<Track> {
+public class TrackAdapter extends ArrayAdapter<MyTrack> {
 
     private final String LOG_TAG = getClass().getSimpleName();
-    Context context;
+    Context mContext;
     int layoutResourceId;
-    List<Track> data = null;
+    List<MyTrack> data = null;
 
     /**
      * Constructor for the Array adapter
      *
      * @param context          is for the mContext of the activity
      * @param layoutResourceId Layout ID that the adapter
-     * @param data             to include the Track data
+     * @param data             to include the MyTrack data
      */
-    public TrackAdapter(Context context, int layoutResourceId, List<Track> data) {
+    public TrackAdapter(Context context, int layoutResourceId, List<MyTrack> data) {
         super(context, layoutResourceId, data);
 
-        this.context = context;
+        this.mContext = context;
         this.layoutResourceId = layoutResourceId;
         this.data = data;
     }
@@ -57,7 +54,7 @@ public class TrackAdapter extends ArrayAdapter<Track> {
         TrackHolder holder;
 
         if (listItemTrackView == null) {
-            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
             listItemTrackView = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new TrackHolder();
@@ -70,27 +67,19 @@ public class TrackAdapter extends ArrayAdapter<Track> {
             holder = (TrackHolder) listItemTrackView.getTag();
         }
         //Get the data at the associated position
-        Track track = getItem(position);
+        MyTrack track = getItem(position);
 
         holder.trackName.setText(track.name);
-        holder.albumName.setText(track.album.name);
+        holder.albumName.setText(track.albumName);
 
         // Check if Track has image
-        if (!track.album.images.isEmpty()) {
-            // Get second from last image (smallest size) url
-            String trackImageUrl = track.album.images.get(track.album.images.size() - 2).url;
-            Log.i(LOG_TAG, "TrackURL: " + trackImageUrl);
-            // Use Picasso to cache image
-            // Picasso.with(mContext).load("http://i.imgur.com/DvpvklR.png").into(imageView);
-            // http://square.github.io/picasso/
-            Picasso.with(context).load(trackImageUrl).into(holder.image);
-
+        if (!track.image.equals("")) {
+            Picasso.with(mContext).load(track.image).into(holder.image);
         } else {
             // Add blank imagePlaceholder to TrackHolder
-            holder.image = new ImageView(context);
+            holder.image = new ImageView(mContext);
             holder.image.setImageResource(R.drawable.nophoto);
         }
-
         return listItemTrackView;
     }
 

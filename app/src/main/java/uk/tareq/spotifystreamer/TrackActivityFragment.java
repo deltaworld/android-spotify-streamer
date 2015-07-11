@@ -47,7 +47,7 @@ public class TrackActivityFragment extends Fragment {
             mArtistId = intent.getStringExtra(Intent.EXTRA_TEXT);
         }
 
-        List<Track> trackList = new ArrayList<>();
+        List<MyTrack> trackList = new ArrayList<>();
 
         View rootView = inflater.inflate(R.layout.fragment_track, container, false);
 
@@ -57,17 +57,16 @@ public class TrackActivityFragment extends Fragment {
         mTrackListView = (ListView) rootView.findViewById(R.id.list_view_tracks);
 
         mTrackListView.setAdapter(mTrackAdapter);
-        // TODO: execute AsyncTask for TrackAdapter
         new Top10TrackTask().execute(mArtistId);
 
         return rootView;
 
     }
 
-    public class Top10TrackTask extends AsyncTask<String, Void, List<Track>> {
+    public class Top10TrackTask extends AsyncTask<String, Void, List<MyTrack>> {
 
         @Override
-        protected List<Track> doInBackground(String... artistId) {
+        protected List<MyTrack> doInBackground(String... artistId) {
 
             if (artistId == null || artistId[0].equals("")) {
                 return null;
@@ -79,7 +78,11 @@ public class TrackActivityFragment extends Fragment {
                     options.put(SpotifyService.COUNTRY, Locale.getDefault().getCountry());
                     Tracks topTracks = spotifyService.getArtistTopTrack(artistId[0], options);
 
-                    return topTracks.tracks;
+                    List<MyTrack> myTracks = new ArrayList<>();
+                    for (Track track : topTracks.tracks) {
+                        myTracks.add(new MyTrack(track));
+                    }
+                    return myTracks;
                 } catch (RetrofitError e) {
                     Log.e(LOG_TAG, "Error here: " + e.getMessage());
                 }
@@ -88,7 +91,7 @@ public class TrackActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(List<Track> tracks) {
+        protected void onPostExecute(List<MyTrack> tracks) {
             super.onPostExecute(tracks);
             if (tracks != null) {
                 mTrackAdapter.clear();

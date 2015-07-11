@@ -31,7 +31,7 @@ public class ArtistAdapter extends ArrayAdapter<MyArtist> {
      * @param data             to include the Artist data
      */
     public ArtistAdapter(Context context, int layoutResourceId, List<MyArtist> data) {
-        //super(context, layoutResourceId, data);
+        //super(mContext, layoutResourceId, data);
         super(context, layoutResourceId, data);
         this.mContext = context;
         this.layoutResourceId = layoutResourceId;

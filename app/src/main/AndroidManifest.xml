@@ -21,8 +21,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--
+        To avoid the onCreate being recalled when the orientation is changed,
+        add the following to <activity>
+        android:configChanges="orientation|screenSize
+        http://stackoverflow.com/questions/3915952/how-to-save-state-during-orientation-change-in-android-if-the-state-is-made-of-m#answer-12054158
+        -->
         <activity
             android:name=".TrackActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_track"
             android:parentActivityName=".ArtistActivity">
             <meta-data

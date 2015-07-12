@@ -16,6 +16,8 @@ import java.util.List;
 /**
  * Created: by Tareq Fadel on 06/07/15.
  * Custom ArrayAdapter utilising the Artist Class
+ * Usage of the Holder Class and Adapter header from tutorial
+ * http://www.ezzylearning.com/tutorial/customizing-android-listview-items-with-custom-arrayadapter
  */
 public class ArtistAdapter extends ArrayAdapter<MyArtist> {
 
@@ -71,6 +73,7 @@ public class ArtistAdapter extends ArrayAdapter<MyArtist> {
 
         // Check if Artist has image
         if (!artist.artistUrl.equals("")) {
+            // http://square.github.io/picasso/
             Picasso.with(mContext).load(artist.artistUrl).into(holder.image);
 
         } else {

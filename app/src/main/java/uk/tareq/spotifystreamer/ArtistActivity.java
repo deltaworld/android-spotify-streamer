@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+// Usage of AppCompatActivity for SDK 22.1.0 instead of ActionBarActivity
+// http://stackoverflow.com/questions/29890530/actionbaractivity-is-deprecated-android-studio
 public class ArtistActivity extends AppCompatActivity {
 
     @Override

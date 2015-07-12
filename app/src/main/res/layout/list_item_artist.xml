@@ -1,17 +1,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="110dp"
+              android:layout_height="108dp"
               android:orientation="horizontal"
-              android:paddingBottom="10dp"
-              android:paddingTop="10dp">
+              android:paddingBottom="8dp"
+              android:paddingTop="8dp">
 
     <ImageView
         android:id="@+id/list_item_artist_imageview"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="104dp"
+        android:layout_height="104dp"
         android:layout_gravity="center_vertical"
         android:minHeight="?android:attr/listPreferredItemHeight"
-        android:paddingRight="10dp"
+        android:paddingRight="8dp"
         android:src="@drawable/nophoto"/>
 
     <TextView

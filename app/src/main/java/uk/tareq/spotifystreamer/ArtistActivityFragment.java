@@ -39,6 +39,8 @@ public class ArtistActivityFragment extends Fragment {
 
     private ArrayList<MyArtist> mArtistList = new ArrayList<>();
     // Holds the ListView instance that derives the data from the adapter.
+    // Usage of mVariable name for non-public, non-static start with m
+    // http://stackoverflow.com/questions/2092098/why-most-of-android-tutorials-variables-start-with-m
     private ListView mArtistListView;
     private ArtistAdapter mArtistAdapter;
 
@@ -50,7 +52,7 @@ public class ArtistActivityFragment extends Fragment {
 
     /**
      * Hides the soft keyboard when invoked
-     *
+     * http://stackoverflow.com/questions/3858362/hide-soft-keyboard
      * @param activity the activity where the view has the keyboard.
      */
     public static void hideSoftKeyboard(Activity activity) {
@@ -88,7 +90,7 @@ public class ArtistActivityFragment extends Fragment {
 
     /**
      * Checks to see if there is a network connection
-     *
+     * http://stackoverflow.com/questions/4238921/detect-whether-there-is-an-internet-connection-available-on-android/4239019#4239019
      * @return boolean response to a valid network connection.
      */
     private boolean isNetworkAvailable() {
@@ -160,6 +162,7 @@ public class ArtistActivityFragment extends Fragment {
         });
 
         // ActionListener for the search button on the EditText keyboard
+        // http://stackoverflow.com/questions/6529485/how-to-set-edittext-to-show-search-button-or-enter-button-on-keyboard
         editText.setOnEditorActionListener(
                 new TextView.OnEditorActionListener() {
                     @Override
@@ -228,6 +231,7 @@ public class ArtistActivityFragment extends Fragment {
             } else try {
                 // Spotify Web Api Integration
                 // Instance class of Spotify Api to use the service
+                // https://github.com/kaaes/spotify-web-api-android
                 SpotifyApi spotifyApi = new SpotifyApi();
 
                 // From the SpotifyApi run the getService method

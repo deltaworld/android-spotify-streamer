@@ -8,6 +8,8 @@ import kaaes.spotify.webapi.android.models.Artist;
 /**
  * Created by Tareq Fadel on 06/07/15.
  * Class defining artist details with the artist image and name.
+ * Usage of Parcelable plugin in Android Studio
+ * https://github.com/mcharmas/android-parcelable-intellij-plugin
  */
 public class MyArtist implements Parcelable {
     public static final Parcelable.Creator<MyArtist> CREATOR = new Parcelable.Creator<MyArtist>() {
@@ -32,6 +34,8 @@ public class MyArtist implements Parcelable {
         this.artistUrl = "";
         this.artistId = artist.id;
         if (!artist.images.isEmpty()) {
+            // Getting 2nd from last image as it is the most appropriate size of ~300x300px
+            // http://stackoverflow.com/questions/687833/how-to-get-the-last-value-of-an-arraylist
             this.artistUrl = artist.images.get(artist.images.size() - 2).url;
         }
     }

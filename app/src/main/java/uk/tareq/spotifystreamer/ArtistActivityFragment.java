@@ -74,6 +74,7 @@ public class ArtistActivityFragment extends Fragment {
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (mArtistAdapter.getCount() > 0) { // check if adapter contains items
             // Construct a new Parcelable Array the same size as Custom ArrayAdapter
             Parcelable[] parcelables = new Parcelable[mArtistAdapter.getCount()];
@@ -85,7 +86,6 @@ public class ArtistActivityFragment extends Fragment {
             // put the parcelable array with the key "artist" ready for retrieval tempStorage
             outState.putParcelableArray("artist", parcelables);
         }
-        super.onSaveInstanceState(outState);
     }
 
     /**
@@ -99,10 +99,6 @@ public class ArtistActivityFragment extends Fragment {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-
-    /**
-     * Class definition for fetching the Artist data asynchronously on a separate thread.
-     */
 
     /**
      * When the fragment View is created inflation required.
@@ -210,7 +206,9 @@ public class ArtistActivityFragment extends Fragment {
         return rootView;
     }
 
-
+    /**
+     * Class definition for fetching the Artist data asynchronously on a separate thread.
+     */
     public class SearchSpotifyTask extends AsyncTask<String, Void, List<MyArtist>> {
 
         // Constant for debugging class definition
@@ -219,8 +217,8 @@ public class ArtistActivityFragment extends Fragment {
         /**
          * The method that performs a separate network call to retrieve the artist data.
          *
-         * @param searchQuery the parameters here are set to Void as no required parameters at this
-         *                    stage.
+         * @param searchQuery the parameters here are set to Void as no required parameters
+         *                    at this stage.
          * @return will return the network result
          */
         @Override
@@ -279,5 +277,3 @@ public class ArtistActivityFragment extends Fragment {
         }
     }
 }
-
-

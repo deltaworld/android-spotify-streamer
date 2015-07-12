@@ -40,6 +40,10 @@ public class MyArtist implements Parcelable {
         }
     }
 
+    public MyArtist() {
+        super();
+    }
+
     protected MyArtist(Parcel in) {
         this.artistName = in.readString();
         this.artistUrl = in.readString();

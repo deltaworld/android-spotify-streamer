@@ -22,6 +22,7 @@ public class TrackActivity extends AppCompatActivity {
             String artistName = intent.getStringExtra(Intent.EXTRA_TEXT);
             ab.setSubtitle(artistName);
         }
+
     }
 
     @Override

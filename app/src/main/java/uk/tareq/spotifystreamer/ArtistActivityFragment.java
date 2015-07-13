@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +29,19 @@ import retrofit.RetrofitError;
 public class ArtistActivityFragment extends Fragment {
 
     private static final String LOG_TAG = ArtistActivityFragment.class.getSimpleName();
-
+    // Progress Bar implementation
+    // http://developer.android.com/reference/android/widget/ProgressBar.html
+    private static final int PROGRESS = 0x1;
     private ArrayList<MyArtist> mArtistList = new ArrayList<>();
     // Holds the ListView instance that derives the data from the adapter.
     // Usage of mVariable name for non-public, non-static start with m
     // http://stackoverflow.com/questions/2092098/why-most-of-android-tutorials-variables-start-with-m
     private ListView mArtistListView;
     private ArtistAdapter mArtistAdapter;
+    private ProgressBar mProgress;
+    private int mProgressStatus = 0;
+
+
 
     /**
      * Default constructor
@@ -94,6 +101,8 @@ public class ArtistActivityFragment extends Fragment {
 
         // Construct a new customArrayAdapter
         mArtistAdapter = new ArtistAdapter(getActivity(), R.layout.list_item_artist, mArtistList);
+        mProgress = (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        mProgress.setVisibility(View.INVISIBLE);
 
         // Create a View to hold the inflated artist search header
         View artistSearchView = getActivity().getLayoutInflater().inflate(
@@ -111,6 +120,7 @@ public class ArtistActivityFragment extends Fragment {
 
         // Add Adapter (containing data) to the ListView
         mArtistListView.setAdapter(mArtistAdapter);
+        hideSoftKeyboard(getActivity());
 
         // Parcelables section
         if (savedInstanceState != null) { // check that there is a savedInstanceState
@@ -149,7 +159,9 @@ public class ArtistActivityFragment extends Fragment {
             public boolean onQueryTextSubmit(String query) {
                 if (Utils.isNetworkAvailable(getActivity())) {
                     SearchSpotifyTask task = new SearchSpotifyTask();
+                    searchText.clearFocus();
                     task.execute(searchText.getQuery().toString());
+                    mProgress.setVisibility(View.VISIBLE);
 
                 } else {
                     Utils.giveToastMessage(getActivity(),
@@ -169,7 +181,7 @@ public class ArtistActivityFragment extends Fragment {
     /**
      * Class definition for fetching the Artist data asynchronously on a separate thread.
      */
-    public class SearchSpotifyTask extends AsyncTask<String, Void, List<MyArtist>> {
+    public class SearchSpotifyTask extends AsyncTask<String, Integer, List<MyArtist>> {
 
         // Constant for debugging class definition
         private final String LOG_TAG = SearchSpotifyTask.class.getSimpleName();
@@ -216,6 +228,13 @@ public class ArtistActivityFragment extends Fragment {
         }
 
         @Override
+        protected void onProgressUpdate(Integer... values) {
+            mProgressStatus = values[0];
+            mProgress.setProgress(mProgressStatus);
+            super.onProgressUpdate(values);
+        }
+
+        @Override
         protected void onPostExecute(List<MyArtist> artists) {
             super.onPostExecute(artists);
             if (artists != null) {
@@ -230,6 +249,7 @@ public class ArtistActivityFragment extends Fragment {
                     Utils.giveToastMessage(getActivity(),
                             getResources().getString(R.string.no_artist));
                 }
+                mProgress.setVisibility(View.INVISIBLE);
             }
         }
     }

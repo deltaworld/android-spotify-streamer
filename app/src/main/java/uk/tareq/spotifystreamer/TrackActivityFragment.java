@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,10 +30,15 @@ import retrofit.RetrofitError;
 public class TrackActivityFragment extends Fragment {
 
     private static final String LOG_TAG = TrackActivityFragment.class.getSimpleName();
-
+    // Progress Bar implementation
+    // http://developer.android.com/reference/android/widget/ProgressBar.html
+    private static final int PROGRESS = 0x1;
     private ListView mTrackListView;
     private TrackAdapter mTrackAdapter;
     private String mArtistId;
+    private ProgressBar mProgress;
+    private int mProgressStatus = 0;
+
 
     public TrackActivityFragment() {
     }
@@ -79,6 +85,9 @@ public class TrackActivityFragment extends Fragment {
         mTrackListView = (ListView) rootView.findViewById(R.id.list_view_tracks);
         mTrackListView.setAdapter(mTrackAdapter);
 
+        mProgress = (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        mProgress.setVisibility(View.INVISIBLE);
+
         // Parcelables section
         if (savedInstanceState != null) { // check that there is a savedInstanceState
 
@@ -95,13 +104,14 @@ public class TrackActivityFragment extends Fragment {
 
         if (Utils.isNetworkAvailable(getActivity())) {
             new Top10TrackTask().execute(mArtistId); // run AsyncTask
+            mProgress.setVisibility(View.VISIBLE);
         } else {
-            Utils.giveToastMessage(getActivity(), "Check you have a valid network connection");
+            Utils.giveToastMessage(getActivity(), getResources().getString(R.string.no_internet));
         }
         return rootView;
     }
 
-    public class Top10TrackTask extends AsyncTask<String, Void, List<MyTrack>> {
+    public class Top10TrackTask extends AsyncTask<String, Integer, List<MyTrack>> {
 
         @Override
         protected List<MyTrack> doInBackground(String... artistId) {
@@ -131,15 +141,24 @@ public class TrackActivityFragment extends Fragment {
         }
 
         @Override
+        protected void onProgressUpdate(Integer... values) {
+            mProgressStatus = values[0];
+            mProgress.setProgress(mProgressStatus);
+            super.onProgressUpdate(values);
+        }
+
+        @Override
         protected void onPostExecute(List<MyTrack> tracks) {
             super.onPostExecute(tracks);
             if (tracks != null) {
                 mTrackAdapter.clear();
                 mTrackAdapter.addAll(tracks);
-                if (mTrackListView.getCount() < 2) {
+                // 1 as SearchBox is not included so if less than 1 then display message.
+                if (mTrackListView.getCount() < 1) {
                     Utils.giveToastMessage(getActivity(),
                             getResources().getString(R.string.no_track));
                 }
+                mProgress.setVisibility(View.INVISIBLE);
 
             }
         }

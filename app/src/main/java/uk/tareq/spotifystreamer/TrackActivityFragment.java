@@ -136,6 +136,11 @@ public class TrackActivityFragment extends Fragment {
             if (tracks != null) {
                 mTrackAdapter.clear();
                 mTrackAdapter.addAll(tracks);
+                if (mTrackListView.getCount() < 2) {
+                    Utils.giveToastMessage(getActivity(),
+                            "Artist does not have any tracks listed.");
+                }
+
             }
         }
     }

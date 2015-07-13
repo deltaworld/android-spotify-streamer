@@ -17,7 +17,7 @@
         https://discussions.udacity.com/t/why-save-restore-fragment/25431
          -->
         <activity
-            android:name=".ArtistActivity"
+            android:name=".Activity.ArtistActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop">
             <intent-filter>
@@ -32,13 +32,13 @@
         http://stackoverflow.com/questions/3915952/how-to-save-state-during-orientation-change-in-android-if-the-state-is-made-of-m#answer-12054158
         -->
         <activity
-            android:name=".TrackActivity"
+            android:name=".Activity.TrackActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_track"
-            android:parentActivityName=".ArtistActivity">
+            android:parentActivityName=".Activity.ArtistActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="uk.tareq.spotifystreamer.ArtistActivity"/>
+                android:value=".Activity.ArtistActivity"/>
         </activity>
     </application>
 

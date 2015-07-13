@@ -1,4 +1,4 @@
-package uk.tareq.spotifystreamer;
+package uk.tareq.spotifystreamer.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

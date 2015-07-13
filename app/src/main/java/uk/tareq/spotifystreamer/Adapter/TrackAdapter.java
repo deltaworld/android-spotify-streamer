@@ -1,4 +1,4 @@
-package uk.tareq.spotifystreamer;
+package uk.tareq.spotifystreamer.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,6 +12,9 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import uk.tareq.spotifystreamer.Model.MyTrack;
+import uk.tareq.spotifystreamer.R;
 
 /**
  * Created: by Tareq Fadel on 06/07/15.

@@ -1,4 +1,4 @@
-package uk.tareq.spotifystreamer;
+package uk.tareq.spotifystreamer.ActivityFragment;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -22,6 +22,11 @@ import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
 import retrofit.RetrofitError;
+import uk.tareq.spotifystreamer.Activity.TrackActivity;
+import uk.tareq.spotifystreamer.Adapter.ArtistAdapter;
+import uk.tareq.spotifystreamer.Model.MyArtist;
+import uk.tareq.spotifystreamer.R;
+import uk.tareq.spotifystreamer.Utils;
 
 /**
  * Fragment for the Artist search and display results
@@ -38,6 +43,8 @@ public class ArtistActivityFragment extends Fragment {
     // http://stackoverflow.com/questions/2092098/why-most-of-android-tutorials-variables-start-with-m
     private ListView mArtistListView;
     private ArtistAdapter mArtistAdapter;
+
+    //***
     private ProgressBar mProgress;
     private int mProgressStatus = 0;
 
@@ -101,6 +108,8 @@ public class ArtistActivityFragment extends Fragment {
 
         // Construct a new customArrayAdapter
         mArtistAdapter = new ArtistAdapter(getActivity(), R.layout.list_item_artist, mArtistList);
+
+        //***
         mProgress = (ProgressBar) rootView.findViewById(R.id.progress_bar);
         mProgress.setVisibility(View.INVISIBLE);
 
@@ -161,6 +170,7 @@ public class ArtistActivityFragment extends Fragment {
                     SearchSpotifyTask task = new SearchSpotifyTask();
                     searchText.clearFocus();
                     task.execute(searchText.getQuery().toString());
+                    //***
                     mProgress.setVisibility(View.VISIBLE);
 
                 } else {
@@ -195,17 +205,15 @@ public class ArtistActivityFragment extends Fragment {
         @Override
         protected List<MyArtist> doInBackground(String... searchQuery) {
 
+            SpotifyService spotifyApi;
             if (searchQuery == null || searchQuery[0].equals("")) {
                 return null;
-            } else try {
                 // Spotify Web Api Integration
                 // Instance class of Spotify Api to use the service
                 // https://github.com/kaaes/spotify-web-api-android
-                SpotifyApi spotifyApi = new SpotifyApi();
 
-                // From the SpotifyApi run the getService method
-                SpotifyService spotifyService = spotifyApi.getService();
-
+            } else try {
+                spotifyApi = new SpotifyApi().getService();
                 /**
                  * Get Spotify catalog information about artists that match a keyword string.
                  * String: The search query's keywords (and optional field filters and operators),
@@ -213,7 +221,7 @@ public class ArtistActivityFragment extends Fragment {
                  * @see <a href="https://developer.spotify.com/web-api/search-item/">Search for an Item</a>
                  */
                 String artistName = searchQuery[0];
-                List<Artist> spArtist = spotifyService.searchArtists(artistName).artists.items;
+                List<Artist> spArtist = spotifyApi.searchArtists(artistName).artists.items;
                 List<MyArtist> myArtists = new ArrayList<>();
                 for (Artist art : spArtist) {
                     myArtists.add(new MyArtist(art));
@@ -227,6 +235,7 @@ public class ArtistActivityFragment extends Fragment {
             }
         }
 
+        //***
         @Override
         protected void onProgressUpdate(Integer... values) {
             mProgressStatus = values[0];
@@ -249,6 +258,7 @@ public class ArtistActivityFragment extends Fragment {
                     Utils.giveToastMessage(getActivity(),
                             getResources().getString(R.string.no_artist));
                 }
+                //***
                 mProgress.setVisibility(View.INVISIBLE);
             }
         }

@@ -1,4 +1,4 @@
 <menu
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="uk.tareq.spotifystreamer.TrackActivity">
+    tools:context="uk.tareq.spotifystreamer.Activity.TrackActivity">
 </menu>

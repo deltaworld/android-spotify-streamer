@@ -1,4 +1,4 @@
-package uk.tareq.spotifystreamer;
+package uk.tareq.spotifystreamer.ActivityFragment;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -23,6 +23,10 @@ import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
 import retrofit.RetrofitError;
+import uk.tareq.spotifystreamer.Adapter.TrackAdapter;
+import uk.tareq.spotifystreamer.Model.MyTrack;
+import uk.tareq.spotifystreamer.R;
+import uk.tareq.spotifystreamer.Utils;
 
 /**
  * A placeholder fragment containing a simple view.

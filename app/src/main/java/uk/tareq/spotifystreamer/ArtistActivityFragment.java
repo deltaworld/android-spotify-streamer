@@ -1,10 +1,7 @@
 package uk.tareq.spotifystreamer;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -20,7 +17,6 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,17 +84,7 @@ public class ArtistActivityFragment extends Fragment {
         }
     }
 
-    /**
-     * Checks to see if there is a network connection
-     * http://stackoverflow.com/questions/4238921/detect-whether-there-is-an-internet-connection-available-on-android/4239019#4239019
-     * @return boolean response to a valid network connection.
-     */
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager)
-                getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
+
 
     /**
      * When the fragment View is created inflation required.
@@ -150,9 +136,11 @@ public class ArtistActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String artistId = mArtistAdapter.getItem(position - 1).artistId;
+                String artistName = mArtistAdapter.getItem(position - 1).artistName;
 
-                Intent intent = new Intent(getActivity(),
-                        TrackActivity.class).putExtra(Intent.EXTRA_TEXT, artistId);
+                Intent intent = new Intent(getActivity(), TrackActivity.class);
+                intent.putExtra(Intent.EXTRA_UID, artistId);
+                intent.putExtra(Intent.EXTRA_TEXT, artistName);
                 startActivity(intent);
             }
         });
@@ -169,7 +157,7 @@ public class ArtistActivityFragment extends Fragment {
 
                             // Pass search query to AsyncTask
                             try {
-                                if (isNetworkAvailable()) {
+                                if (Utils.isNetworkAvailable(getActivity())) {
                                     if (!searchQuery.equals("")) { // make sure text is not empty
 
                                         editText.setText(""); // clear previous search query
@@ -181,17 +169,13 @@ public class ArtistActivityFragment extends Fragment {
                                         editText.clearFocus();
                                         return true;
                                     } else {
-                                        Toast toast = Toast.makeText(getActivity(),
-                                                "Enter an Artist name",
-                                                Toast.LENGTH_SHORT);
-                                        toast.show();
+                                        Utils.giveToastMessage(getActivity(),
+                                                "Enter an Artist name");
                                         return true;
                                     }
                                 } else {
-                                    Toast toast = Toast.makeText(getActivity(),
-                                            "Check you have a valid network connection",
-                                            Toast.LENGTH_SHORT);
-                                    toast.show();
+                                    Utils.giveToastMessage(getActivity(),
+                                            "Check you have a valid network connection");
                                     return true;
                                 }
 
@@ -251,7 +235,6 @@ public class ArtistActivityFragment extends Fragment {
                 // results of search as  List<MyArtist> objects
                 return myArtists;
             } catch (RetrofitError e) {
-                // If search Query not found then display toast
                 Log.e(LOG_TAG, e.getMessage());
                 return null;
             }
@@ -268,10 +251,8 @@ public class ArtistActivityFragment extends Fragment {
                 mArtistAdapter.addAll(artists);
 
                 if (mArtistListView.getCount() < 2) {
-                    Toast toast = Toast.makeText(getActivity(),
-                            "Artist Not found. Refine your search and try again",
-                            Toast.LENGTH_LONG);
-                    toast.show();
+                    Utils.giveToastMessage(getActivity(),
+                            "Artist Not found. Refine your search and try again");
                 }
             }
         }

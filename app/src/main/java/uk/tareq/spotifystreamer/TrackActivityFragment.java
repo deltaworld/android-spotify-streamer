@@ -66,8 +66,8 @@ public class TrackActivityFragment extends Fragment {
 
         // Get intent from ArtistActivity
         Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            mArtistId = intent.getStringExtra(Intent.EXTRA_TEXT);
+        if (intent != null && intent.hasExtra(Intent.EXTRA_UID)) {
+            mArtistId = intent.getStringExtra(Intent.EXTRA_UID);
         }
 
         List<MyTrack> trackList = new ArrayList<>();
@@ -93,9 +93,11 @@ public class TrackActivityFragment extends Fragment {
             }
         }
 
-
-        new Top10TrackTask().execute(mArtistId); // run AsyncTask
-
+        if (Utils.isNetworkAvailable(getActivity())) {
+            new Top10TrackTask().execute(mArtistId); // run AsyncTask
+        } else {
+            Utils.giveToastMessage(getActivity(), "Check you have a valid network connection");
+        }
         return rootView;
     }
 

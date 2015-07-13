@@ -7,16 +7,12 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,9 +99,9 @@ public class ArtistActivityFragment extends Fragment {
         View artistSearchView = getActivity().getLayoutInflater().inflate(
                 R.layout.header_artist_search, null);
 
-        // EditText for Artist Search
-        final EditText editText = (EditText) artistSearchView
-                .findViewById(R.id.edit_text_search_artist);
+        final android.support.v7.widget.SearchView searchText =
+                (android.support.v7.widget.SearchView)
+                        artistSearchView.findViewById(R.id.search_view_search_artist);
 
         // Variable to hold the inflated ListView
         mArtistListView = (ListView) rootView.findViewById(R.id.list_view_artist);
@@ -143,48 +139,30 @@ public class ArtistActivityFragment extends Fragment {
             }
         });
 
-        // ActionListener for the search button on the EditText keyboard
-        // http://stackoverflow.com/questions/6529485/how-to-set-edittext-to-show-search-button-or-enter-button-on-keyboard
-        editText.setOnEditorActionListener(
-                new TextView.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        // SearchView onClickClistener implementation.
+        // https://review.udacity.com/#!/reviews/28033
+        searchText.setIconifiedByDefault(false);
+        searchText.setQueryHint(getResources().getString(R.string.artist_search_hint));
+        searchText.setOnQueryTextListener(new android.support.v7.widget.SearchView.
+                OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (Utils.isNetworkAvailable(getActivity())) {
+                    SearchSpotifyTask task = new SearchSpotifyTask();
+                    task.execute(searchText.getQuery().toString());
 
-                        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                            String searchQuery = editText.getText().toString();
-
-                            // Pass search query to AsyncTask
-                            try {
-                                if (Utils.isNetworkAvailable(getActivity())) {
-                                    if (!searchQuery.equals("")) { // make sure text is not empty
-
-                                        editText.setText(""); // clear previous search query
-                                        // run AsyncTask
-                                        mArtistAdapter.clear();
-                                        new SearchSpotifyTask().execute(searchQuery);
-
-                                        hideSoftKeyboard(getActivity()); // hide keyboard
-                                        editText.clearFocus();
-                                        return true;
-                                    } else {
-                                        Utils.giveToastMessage(getActivity(),
-                                                "Enter an Artist name");
-                                        return true;
-                                    }
-                                } else {
-                                    Utils.giveToastMessage(getActivity(),
-                                            "Check you have a valid network connection");
-                                    return true;
-                                }
-
-                            } catch (IllegalStateException e) {
-                                Log.e(LOG_TAG, e.getMessage());
-                            }
-                        }
-                        return false;
-                    }
+                } else {
+                    Utils.giveToastMessage(getActivity(),
+                            getResources().getString(R.string.no_internet));
                 }
-        );
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
         return rootView;
     }
 

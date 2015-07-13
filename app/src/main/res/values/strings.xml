@@ -2,4 +2,5 @@
     <string name="app_name">Spotify Streamer - Artists</string>
     <string name="title_activity_track">Top 10 Tracks</string>
     <string name="artist_search_hint">Search for an artist</string>
+    <string name="no_internet">Check you have a valid network connection</string>
 </resources>

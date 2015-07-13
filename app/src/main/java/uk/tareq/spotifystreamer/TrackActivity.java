@@ -9,8 +9,6 @@ import android.view.MenuItem;
 
 public class TrackActivity extends AppCompatActivity {
 
-    private static final String LOG_TAG = TrackActivity.class.getSimpleName();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,7 +18,6 @@ public class TrackActivity extends AppCompatActivity {
         // https://discussions.udacity.com/t/getactionbar-returns-null/22885
         android.support.v7.app.ActionBar ab = getSupportActionBar();
         if (ab != null) {
-
             Intent intent = this.getIntent();
             String artistName = intent.getStringExtra(Intent.EXTRA_TEXT);
             ab.setSubtitle(artistName);

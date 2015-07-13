@@ -84,8 +84,6 @@ public class ArtistActivityFragment extends Fragment {
         }
     }
 
-
-
     /**
      * When the fragment View is created inflation required.
      */
@@ -201,8 +199,7 @@ public class ArtistActivityFragment extends Fragment {
         /**
          * The method that performs a separate network call to retrieve the artist data.
          *
-         * @param searchQuery the parameters here are set to Void as no required parameters
-         *                    at this stage.
+         * @param searchQuery the inputted search term by the user
          * @return will return the network result
          */
         @Override

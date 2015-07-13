@@ -228,7 +228,7 @@ public class ArtistActivityFragment extends Fragment {
                 // mArtistListView.getCount() = 1 give 0 artists (1 for the EditText Header)
                 if (mArtistListView.getCount() < 2) {
                     Utils.giveToastMessage(getActivity(),
-                            "Artist Not found. Refine your search and try again");
+                            getResources().getString(R.string.no_artist));
                 }
             }
         }

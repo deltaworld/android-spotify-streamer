@@ -138,7 +138,7 @@ public class TrackActivityFragment extends Fragment {
                 mTrackAdapter.addAll(tracks);
                 if (mTrackListView.getCount() < 2) {
                     Utils.giveToastMessage(getActivity(),
-                            "Artist does not have any tracks listed.");
+                            getResources().getString(R.string.no_track));
                 }
 
             }

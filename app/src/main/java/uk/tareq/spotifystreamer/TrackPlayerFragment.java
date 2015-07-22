@@ -1,9 +1,9 @@
 package uk.tareq.spotifystreamer;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +29,10 @@ public class TrackPlayerFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    public TrackPlayerFragment() {
+        // Required empty public constructor
+    }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -45,10 +49,6 @@ public class TrackPlayerFragment extends Fragment {
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public TrackPlayerFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -103,7 +103,7 @@ public class TrackPlayerFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Uri uri);
     }
 
 }

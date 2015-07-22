@@ -1,10 +1,12 @@
 package uk.tareq.spotifystreamer.ActivityFragment;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +28,9 @@ import kaaes.spotify.webapi.android.models.Tracks;
 import retrofit.RetrofitError;
 import uk.tareq.spotifystreamer.Adapter.TrackAdapter;
 import uk.tareq.spotifystreamer.Model.MyTrack;
+import uk.tareq.spotifystreamer.MyDialogFragment;
 import uk.tareq.spotifystreamer.R;
+import uk.tareq.spotifystreamer.TrackPlayerFragment;
 import uk.tareq.spotifystreamer.Utils;
 
 /**
@@ -43,6 +47,7 @@ public class TrackActivityFragment extends Fragment {
     private String mArtistId;
     private ProgressBar mProgress;
     private int mProgressStatus = 0;
+    private FragmentManager mFragmentManager = getFragmentManager();
 
 
     public TrackActivityFragment() {
@@ -70,6 +75,20 @@ public class TrackActivityFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
+    void showDialog() {
+        // Create the fragment and show it as a dialog.
+        MyDialogFragment newFragment = MyDialogFragment.newInstance();
+        newFragment.show(getFragmentManager(), "dialog");
+    }
+
+    void showFragment(String w1, String w2) {
+        TrackPlayerFragment dialog = TrackPlayerFragment.newInstance(w1, w2);
+        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(R.id.fragment, dialog)
+                .addToBackStack(null).commit();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -94,6 +113,8 @@ public class TrackActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Log.i(LOG_TAG, "TRACK is Clicked");
+                //showDialog();
+                showFragment("Hello", "World");
             }
         });
         mProgress = (ProgressBar) rootView.findViewById(R.id.progress_bar);

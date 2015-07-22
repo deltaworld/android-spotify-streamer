@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -89,6 +90,12 @@ public class TrackActivityFragment extends Fragment {
         mTrackListView = (ListView) rootView.findViewById(R.id.list_view_tracks);
         mTrackListView.setAdapter(mTrackAdapter);
 
+        mTrackListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Log.i(LOG_TAG, "TRACK is Clicked");
+            }
+        });
         mProgress = (ProgressBar) rootView.findViewById(R.id.progress_bar);
         mProgress.setVisibility(View.INVISIBLE);
 

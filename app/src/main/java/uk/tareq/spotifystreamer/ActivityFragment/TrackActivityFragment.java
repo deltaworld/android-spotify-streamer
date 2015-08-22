@@ -24,6 +24,7 @@ import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
 import retrofit.RetrofitError;
+import uk.tareq.spotifystreamer.Activity.PlayerActivity;
 import uk.tareq.spotifystreamer.Adapter.TrackAdapter;
 import uk.tareq.spotifystreamer.Model.MyTrack;
 import uk.tareq.spotifystreamer.R;
@@ -41,6 +42,7 @@ public class TrackActivityFragment extends Fragment {
     private ListView mTrackListView;
     private TrackAdapter mTrackAdapter;
     private String mArtistId;
+    private String mArtistName;
     private ProgressBar mProgress;
     private int mProgressStatus = 0;
 
@@ -79,6 +81,7 @@ public class TrackActivityFragment extends Fragment {
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra(Intent.EXTRA_UID)) {
             mArtistId = intent.getStringExtra(Intent.EXTRA_UID);
+            mArtistName = intent.getStringExtra(Intent.EXTRA_TEXT);
         }
 
         List<MyTrack> trackList = new ArrayList<>();
@@ -118,7 +121,27 @@ public class TrackActivityFragment extends Fragment {
         mTrackListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(LOG_TAG, "onItemClick ");
+
+                //mArtistId
+                String trackName = mTrackAdapter.getItem(position).trackName;
+                String albumName = mTrackAdapter.getItem(position).albumName;
+                String albumArtUrl = mTrackAdapter.getItem(position).image;
+                String trackId = mTrackAdapter.getItem(position).trackId;
+
+                Intent intent = new Intent(getActivity(), PlayerActivity.class);
+
+                // pass multiple items as bundle to new activity
+                // http://stackoverflow.com/questions/8452526/android-can-i-use-putextra-to-pass-multiple-values
+                Bundle extras = new Bundle();
+                extras.putString("EXTRA_ARTIST_ID", mArtistId);
+                extras.putString("EXTRA_ARTIST_NAME", mArtistName);
+                extras.putString("EXTRA_TRACK_ID", trackId);
+                extras.putString("EXTRA_TRACK_NAME", trackName);
+                extras.putString("EXTRA_ALBUM_NAME", albumName);
+                extras.putString("EXTRA_ALBUM_ART_URL", albumArtUrl);
+                intent.putExtras(extras);
+
+                startActivity(intent);
             }
         });
         return rootView;

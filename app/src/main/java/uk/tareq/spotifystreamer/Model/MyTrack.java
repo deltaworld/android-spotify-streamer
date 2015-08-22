@@ -19,6 +19,7 @@ public class MyTrack extends Track implements Parcelable {
             return new MyTrack[size];
         }
     };
+    public String trackId;
     public String trackName;
     public String albumName;
     public String image;
@@ -28,6 +29,7 @@ public class MyTrack extends Track implements Parcelable {
      */
     public MyTrack(Track track) {
         super();
+        this.trackId = track.id;
         this.trackName = track.name;
         this.albumName = track.album.name;
         this.image = "";
@@ -37,6 +39,7 @@ public class MyTrack extends Track implements Parcelable {
     }
 
     protected MyTrack(Parcel in) {
+        this.trackId = in.readString();
         this.trackName = in.readString();
         this.albumName = in.readString();
         this.image = in.readString();
@@ -49,6 +52,7 @@ public class MyTrack extends Track implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.trackId);
         dest.writeString(this.trackName);
         dest.writeString(this.albumName);
         dest.writeString(this.image);

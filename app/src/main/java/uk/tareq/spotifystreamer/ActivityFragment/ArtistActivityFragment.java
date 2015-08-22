@@ -149,6 +149,7 @@ public class ArtistActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String artistId = mArtistAdapter.getItem(position - 1).artistId;
+
                 String artistName = mArtistAdapter.getItem(position - 1).artistName;
 
                 Intent intent = new Intent(getActivity(), TrackActivity.class);

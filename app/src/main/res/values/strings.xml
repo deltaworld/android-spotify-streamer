@@ -5,4 +5,7 @@
     <string name="no_internet">Check you have a valid network connection</string>
     <string name="no_artist">Artist Not found. Refine your search and try again</string>
     <string name="no_track">Artist does not have any tracks listed.</string>
+    <string name="title_activity_player">PlayerActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 </resources>

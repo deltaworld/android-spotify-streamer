@@ -124,8 +124,9 @@ public class TrackActivityFragment extends Fragment {
 
                 //mArtistId
                 String trackName = mTrackAdapter.getItem(position).trackName;
+                String trackUrl = mTrackAdapter.getItem(position).trackUrl;
                 String albumName = mTrackAdapter.getItem(position).albumName;
-                String albumArtUrl = mTrackAdapter.getItem(position).image;
+                String albumArtUrl = mTrackAdapter.getItem(position).imageUrl;
                 String trackId = mTrackAdapter.getItem(position).trackId;
 
                 Intent intent = new Intent(getActivity(), PlayerActivity.class);
@@ -136,6 +137,7 @@ public class TrackActivityFragment extends Fragment {
                 extras.putString("EXTRA_ARTIST_ID", mArtistId);
                 extras.putString("EXTRA_ARTIST_NAME", mArtistName);
                 extras.putString("EXTRA_TRACK_ID", trackId);
+                extras.putString("EXTRA_TRACK_URL", trackUrl);
                 extras.putString("EXTRA_TRACK_NAME", trackName);
                 extras.putString("EXTRA_ALBUM_NAME", albumName);
                 extras.putString("EXTRA_ALBUM_ART_URL", albumArtUrl);

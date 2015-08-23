@@ -74,7 +74,7 @@ public class ArtistAdapter extends ArrayAdapter<MyArtist> {
 
         holder.artistName.setText(artist.artistName);
 
-        // Check if Artist has image
+        // Check if Artist has imageUrl
         if (!artist.artistUrl.equals("")) {
             // http://square.github.io/picasso/
             Picasso.with(mContext).load(artist.artistUrl).into(holder.image);

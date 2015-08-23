@@ -75,9 +75,9 @@ public class TrackAdapter extends ArrayAdapter<MyTrack> {
         holder.trackName.setText(track.trackName);
         holder.albumName.setText(track.albumName);
 
-        // Check if Track has image
-        if (!track.image.equals("")) {
-            Picasso.with(mContext).load(track.image).into(holder.image);
+        // Check if Track has imageUrl
+        if (!track.imageUrl.equals("")) {
+            Picasso.with(mContext).load(track.imageUrl).into(holder.image);
         } else {
             // Add blank imagePlaceholder to TrackHolder
             holder.image = new ImageView(mContext);

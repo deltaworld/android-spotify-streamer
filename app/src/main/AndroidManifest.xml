@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="uk.tareq.spotifystreamer">
+<manifest
+    package="uk.tareq.spotifystreamer"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Added Internet Permission -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -51,6 +52,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uk.tareq.spotifystreamer.Activity.TrackActivity" />
         </activity>
+
+        <service android:name="uk.tareq.spotifystreamer.MusicService"/>
     </application>
 
 </manifest>

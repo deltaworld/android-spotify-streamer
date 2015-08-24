@@ -18,6 +18,7 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import uk.tareq.spotifystreamer.MediaPlayerRegistry;
 import uk.tareq.spotifystreamer.R;
 
 /**
@@ -41,7 +42,12 @@ public class PlayerActivityFragment extends Fragment {
     private Runnable updateSeekBarTime = new Runnable() {
         public void run() {
             //get current position
-            mTimeElapsed = mMediaPlayer.getCurrentPosition();
+            try {
+                mTimeElapsed = mMediaPlayer.getCurrentPosition();
+            } catch (IllegalStateException e) {
+                System.out.println(e.getMessage());
+            }
+
             //set seekbar progress
             mSeekBar.setProgress(mTimeElapsed);
 
@@ -126,6 +132,13 @@ public class PlayerActivityFragment extends Fragment {
 
                 Log.i(LOG_TAG, "PLAY ");
                 if (!mMediaPlayer.isPlaying()) {
+
+                    for (MediaPlayer player : MediaPlayerRegistry.mList) {
+                        if (player != null && player.isPlaying()) {
+                            player.release();
+                        }
+                    }
+                    MediaPlayerRegistry.mList.add(mMediaPlayer);
                     mMediaPlayer.start();
                     playButton.setImageResource(android.R.drawable.ic_media_pause);
                     mDurationHandler.postDelayed(updateSeekBarTime, 100);

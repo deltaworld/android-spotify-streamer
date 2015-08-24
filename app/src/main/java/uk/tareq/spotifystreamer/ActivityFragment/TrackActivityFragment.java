@@ -35,7 +35,7 @@ import uk.tareq.spotifystreamer.Utils;
  */
 public class TrackActivityFragment extends Fragment {
 
-    private static final String LOG_TAG = TrackActivityFragment.class.getSimpleName();
+    private static final String TAG = TrackActivityFragment.class.getSimpleName();
     // Progress Bar implementation
     // http://developer.android.com/reference/android/widget/ProgressBar.html
     private static final int PROGRESS = 0x1;
@@ -45,6 +45,7 @@ public class TrackActivityFragment extends Fragment {
     private String mArtistName;
     private ProgressBar mProgress;
     private int mProgressStatus = 0;
+    private ArrayList<String> mTrackUrls = new ArrayList<>();
 
 
     public TrackActivityFragment() {
@@ -122,6 +123,8 @@ public class TrackActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                Log.i(TAG, "onItemClick " + mTrackUrls.get(position));
+
                 //mArtistId
                 String trackName = mTrackAdapter.getItem(position).trackName;
                 String trackUrl = mTrackAdapter.getItem(position).trackUrl;
@@ -173,7 +176,7 @@ public class TrackActivityFragment extends Fragment {
                 }
                 return myTracks;
             } catch (RetrofitError e) {
-                Log.e(LOG_TAG, "Error here: " + e.getMessage());
+                Log.e(TAG, "Error here: " + e.getMessage());
             }
             return null;
         }
@@ -189,6 +192,12 @@ public class TrackActivityFragment extends Fragment {
         protected void onPostExecute(List<MyTrack> tracks) {
             super.onPostExecute(tracks);
             if (tracks != null) {
+
+                // Get track URLs and store them in an ArrayList
+                for (MyTrack track : tracks) {
+                    mTrackUrls.add(track.trackUrl);
+                }
+
                 mTrackAdapter.clear();
                 mTrackAdapter.addAll(tracks);
                 // 1 as SearchBox is not included so if less than 1 then display message.

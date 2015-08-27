@@ -1,5 +1,6 @@
 package uk.tareq.spotifystreamer.ActivityFragment;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import uk.tareq.spotifystreamer.MediaPlayerRegistry;
+import uk.tareq.spotifystreamer.Model.MyTracks;
 import uk.tareq.spotifystreamer.R;
 
 /**
@@ -26,7 +28,7 @@ import uk.tareq.spotifystreamer.R;
  */
 public class PlayerActivityFragment extends Fragment {
 
-    private static final String LOG_TAG = PlayerActivityFragment.class.getSimpleName();
+    private static final String TAG = PlayerActivityFragment.class.getSimpleName();
     private MediaPlayer mMediaPlayer = new MediaPlayer();
     private int mTimeElapsed = 0;
     private int mDuration;
@@ -69,122 +71,125 @@ public class PlayerActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_player, container, false);
+        Intent intent = getActivity().getIntent();
+        // Get Extras from Intent
+        if (intent != null && intent.hasExtra("EXTRA_MYTRACKS")) {
+            Bundle extras = intent.getExtras();
 
-        Bundle extras = getActivity().getIntent().getExtras();
+            // Extras objects in vars
+            String artistName = extras.getString("EXTRA_ARTIST_NAME");
+            int position = extras.getInt("EXTRA_POSITION");
+            MyTracks myTracks = extras.getParcelable("EXTRA_MYTRACKS");
 
-
-        String artistId = extras.getString("EXTRA_ARTIST_ID");
-        String artistName = extras.getString("EXTRA_ARTIST_NAME");
-        String trackId = extras.getString("EXTRA_TRACK_ID");
-        String trackName = extras.getString("EXTRA_TRACK_NAME");
-        final String trackUrl = extras.getString("EXTRA_TRACK_URL");
-        String albumName = extras.getString("EXTRA_ALBUM_NAME");
-        String albumArtUrl = extras.getString("EXTRA_ALBUM_ART_URL");
-
-        Log.i(LOG_TAG, "artistId " + artistId);
-        Log.i(LOG_TAG, "artistName " + artistName);
-        Log.i(LOG_TAG, "trackId " + trackId);
-        Log.i(LOG_TAG, "trackName " + trackName);
-        Log.i(LOG_TAG, "trackUrl " + trackUrl);
-        Log.i(LOG_TAG, "albumName " + albumName);
-        Log.i(LOG_TAG, "albumURL " + albumArtUrl);
-
-        // UI: static display of track info
-        TextView albumNameTextView = (TextView) rootView.findViewById(R.id.album_name_player_text_view);
-        TextView artistNameTextView = (TextView) rootView.findViewById(R.id.artist_name_player_text_view);
-        TextView trackNameTextView = (TextView) rootView.findViewById(R.id.track_name_player_text_view);
-        ImageView albumImageView = (ImageView) rootView.findViewById(R.id.album_artwork_image_view);
-
-        // UI: Player functionality
-        final ImageButton playButton = (ImageButton) rootView.findViewById(R.id.play_pause_image_button);
-        final ImageButton previousButton = (ImageButton) rootView.findViewById(R.id.previous_track_image_button);
-        final ImageButton nextButton = (ImageButton) rootView.findViewById(R.id.next_track_image_button);
-        mSeekBar = (SeekBar) rootView.findViewById(R.id.scrub_seek_bar);
-        mStartTimer = (TextView) rootView.findViewById(R.id.start_timer_text_view);
-
-        // UI: Static fields
-        albumNameTextView.setText(albumName);
-        artistNameTextView.setText(artistName);
-        trackNameTextView.setText(trackName);
-
-        // Check if Track has imageUrl - Picasso caches image from Url
-        if (!albumArtUrl.equals("")) {
-            Picasso.with(getActivity()).load(albumArtUrl).into(albumImageView);
-        } else {
-            // Add blank imagePlaceholder to TrackHolder
-            albumImageView.setImageResource(R.drawable.nophoto);
-        }
-
-        try {
-            mMediaPlayer.setDataSource(trackUrl);
-            mMediaPlayer.prepare();
-            mDuration = mMediaPlayer.getDuration();
-            mSeekBar.setMax(mDuration);
+            String trackName = myTracks.myTracks.get(position).trackName;
+            final String trackUrl = myTracks.myTracks.get(position).trackUrl;
+            String albumName = myTracks.myTracks.get(position).albumName;
+            String albumArtUrl = myTracks.myTracks.get(position).imageUrl;
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // Functionality of Player: PLAY
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            // UI: static display of track info
+            TextView albumNameTextView = (TextView) rootView.findViewById(
+                    R.id.album_name_player_text_view);
+            TextView artistNameTextView = (TextView) rootView.findViewById(
+                    R.id.artist_name_player_text_view);
+            TextView trackNameTextView = (TextView) rootView.findViewById(
+                    R.id.track_name_player_text_view);
+            ImageView albumImageView = (ImageView) rootView.findViewById(
+                    R.id.album_artwork_image_view);
 
-                Log.i(LOG_TAG, "PLAY ");
-                if (!mMediaPlayer.isPlaying()) {
+            // UI: Player functionality
+            final ImageButton playButton = (ImageButton) rootView.findViewById(
+                    R.id.play_pause_image_button);
+            final ImageButton previousButton = (ImageButton) rootView.findViewById(
+                    R.id.previous_track_image_button);
+            final ImageButton nextButton = (ImageButton) rootView.findViewById(
+                    R.id.next_track_image_button);
+            mSeekBar = (SeekBar) rootView.findViewById(R.id.scrub_seek_bar);
+            mStartTimer = (TextView) rootView.findViewById(R.id.start_timer_text_view);
 
-                    for (MediaPlayer player : MediaPlayerRegistry.mList) {
-                        if (player != null && player.isPlaying()) {
-                            player.release();
+            // UI: Static fields
+            albumNameTextView.setText(albumName);
+            artistNameTextView.setText(artistName);
+            trackNameTextView.setText(trackName);
+
+            // Check if Track has imageUrl - Picasso caches image from Url
+            if (!albumArtUrl.equals("")) {
+                Picasso.with(getActivity()).load(albumArtUrl).into(albumImageView);
+            } else {
+                // Add blank imagePlaceholder to TrackHolder
+                albumImageView.setImageResource(R.drawable.nophoto);
+            }
+
+            try {
+                mMediaPlayer.setDataSource(trackUrl);
+                mMediaPlayer.prepare();
+                mDuration = mMediaPlayer.getDuration();
+                mSeekBar.setMax(mDuration);
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // Functionality of Player: PLAY
+            playButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    Log.i(TAG, "PLAY ");
+                    if (!mMediaPlayer.isPlaying()) {
+
+                        for (MediaPlayer player : MediaPlayerRegistry.mList) {
+                            if (player != null && player.isPlaying()) {
+                                player.release();
+                            }
                         }
+                        MediaPlayerRegistry.mList.add(mMediaPlayer);
+                        mMediaPlayer.start();
+                        playButton.setImageResource(android.R.drawable.ic_media_pause);
+                        mDurationHandler.postDelayed(updateSeekBarTime, 100);
+                    } else {
+                        mMediaPlayer.pause();
+                        playButton.setImageResource(android.R.drawable.ic_media_play);
                     }
-                    MediaPlayerRegistry.mList.add(mMediaPlayer);
-                    mMediaPlayer.start();
-                    playButton.setImageResource(android.R.drawable.ic_media_pause);
-                    mDurationHandler.postDelayed(updateSeekBarTime, 100);
-                } else {
-                    mMediaPlayer.pause();
-                    playButton.setImageResource(android.R.drawable.ic_media_play);
+
+
+                }
+            });
+
+            // Functionality of Player: PREVIOUS
+            previousButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "PREVIOUS ");
+                }
+            });
+
+            // Functionality of Player: NEXT
+            nextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "NEXT ");
+                }
+            });
+
+            // http://stackoverflow.com/questions/17168215/seekbar-and-media-player-in-android
+            mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
                 }
 
-
-            }
-        });
-
-        // Functionality of Player: PREVIOUS
-        previousButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(LOG_TAG, "PREVIOUS ");
-            }
-        });
-
-        // Functionality of Player: NEXT
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(LOG_TAG, "NEXT ");
-            }
-        });
-
-        // http://stackoverflow.com/questions/17168215/seekbar-and-media-player-in-android
-        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (mMediaPlayer != null && fromUser) {
-                    mMediaPlayer.seekTo(progress);
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
                 }
-            }
-        });
 
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (mMediaPlayer != null && fromUser) {
+                        mMediaPlayer.seekTo(progress);
+                    }
+                }
+            });
+        }
 
         return rootView;
     }

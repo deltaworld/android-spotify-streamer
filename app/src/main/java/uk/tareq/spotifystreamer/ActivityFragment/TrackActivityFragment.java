@@ -27,6 +27,7 @@ import retrofit.RetrofitError;
 import uk.tareq.spotifystreamer.Activity.PlayerActivity;
 import uk.tareq.spotifystreamer.Adapter.TrackAdapter;
 import uk.tareq.spotifystreamer.Model.MyTrack;
+import uk.tareq.spotifystreamer.Model.MyTracks;
 import uk.tareq.spotifystreamer.R;
 import uk.tareq.spotifystreamer.Utils;
 
@@ -45,7 +46,9 @@ public class TrackActivityFragment extends Fragment {
     private String mArtistName;
     private ProgressBar mProgress;
     private int mProgressStatus = 0;
-    private ArrayList<String> mTrackUrls = new ArrayList<>();
+    private MyTracks myTracks = new MyTracks();
+
+
 
 
     public TrackActivityFragment() {
@@ -123,29 +126,11 @@ public class TrackActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Log.i(TAG, "onItemClick " + mTrackUrls.get(position));
-
-                //mArtistId
-                String trackName = mTrackAdapter.getItem(position).trackName;
-                String trackUrl = mTrackAdapter.getItem(position).trackUrl;
-                String albumName = mTrackAdapter.getItem(position).albumName;
-                String albumArtUrl = mTrackAdapter.getItem(position).imageUrl;
-                String trackId = mTrackAdapter.getItem(position).trackId;
-
                 Intent intent = new Intent(getActivity(), PlayerActivity.class);
 
-                // pass multiple items as bundle to new activity
-                // http://stackoverflow.com/questions/8452526/android-can-i-use-putextra-to-pass-multiple-values
-                Bundle extras = new Bundle();
-                extras.putString("EXTRA_ARTIST_ID", mArtistId);
-                extras.putString("EXTRA_ARTIST_NAME", mArtistName);
-                extras.putString("EXTRA_TRACK_ID", trackId);
-                extras.putString("EXTRA_TRACK_URL", trackUrl);
-                extras.putString("EXTRA_TRACK_NAME", trackName);
-                extras.putString("EXTRA_ALBUM_NAME", albumName);
-                extras.putString("EXTRA_ALBUM_ART_URL", albumArtUrl);
-                intent.putExtras(extras);
-
+                intent.putExtra("EXTRA_POSITION", position);
+                intent.putExtra("EXTRA_MYTRACKS", myTracks);
+                intent.putExtra("EXTRA_ARTIST_NAME", mArtistName);
                 startActivity(intent);
             }
         });
@@ -193,10 +178,7 @@ public class TrackActivityFragment extends Fragment {
             super.onPostExecute(tracks);
             if (tracks != null) {
 
-                // Get track URLs and store them in an ArrayList
-                for (MyTrack track : tracks) {
-                    mTrackUrls.add(track.trackUrl);
-                }
+                myTracks.myTracks = tracks;
 
                 mTrackAdapter.clear();
                 mTrackAdapter.addAll(tracks);

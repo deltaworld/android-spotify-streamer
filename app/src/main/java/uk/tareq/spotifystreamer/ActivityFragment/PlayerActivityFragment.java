@@ -1,9 +1,14 @@
 package uk.tareq.spotifystreamer.ActivityFragment;
 
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,10 +22,13 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import uk.tareq.spotifystreamer.MediaPlayerRegistry;
+import uk.tareq.spotifystreamer.Model.MyTrack;
 import uk.tareq.spotifystreamer.Model.MyTracks;
+import uk.tareq.spotifystreamer.MusicService;
 import uk.tareq.spotifystreamer.R;
 
 /**
@@ -32,13 +40,42 @@ public class PlayerActivityFragment extends Fragment {
     private MediaPlayer mMediaPlayer = new MediaPlayer();
     private int mTimeElapsed = 0;
     private int mDuration;
-    private int mForwardTime = 2000, mBackwardTime = 2000;
     private SeekBar mSeekBar;
     private Handler mDurationHandler = new Handler();
+
+    // Music Service variables
+    private MusicService mMusicService;
+    private Intent mPlayIntent;
+    private boolean mMusicBound = false;
+    private MyTracks myTracks;
 
     private TextView mStartTimer;
     private ImageButton mForward;
     private ImageButton mBackward;
+
+    // Binding connection to the MusicService
+    private ServiceConnection mMusicConnection = new ServiceConnection() {
+        // When the Music Service is connected to the fragment callback
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            // binder instance variable, typecasting the IBinder service to MusicBinder
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+            // get the Music Service through the binder
+            mMusicService = binder.getService();
+            // pass the TrackList to the service
+            mMusicService.setTracks((ArrayList<MyTrack>) myTracks.myTracks);
+            // Flag for connection is ON
+            mMusicBound = true;
+        }
+
+        // When the Music Service is disconnected to the fragment callback
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // Flag for connection is OFF
+            mMusicBound = false;
+        }
+    };
+
     // http://examples.javacodegeeks.com/android/android-mediaplayer-example/
     // handler to change seekBarTime
     private Runnable updateSeekBarTime = new Runnable() {
@@ -79,7 +116,7 @@ public class PlayerActivityFragment extends Fragment {
             // Extras objects in vars
             String artistName = extras.getString("EXTRA_ARTIST_NAME");
             int position = extras.getInt("EXTRA_POSITION");
-            MyTracks myTracks = extras.getParcelable("EXTRA_MYTRACKS");
+            myTracks = extras.getParcelable("EXTRA_MYTRACKS");
 
             String trackName = myTracks.myTracks.get(position).trackName;
             final String trackUrl = myTracks.myTracks.get(position).trackUrl;
@@ -192,5 +229,27 @@ public class PlayerActivityFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    /**
+     * Created on Fragment Lifecycle after onCreateView.
+     * Binding the MusicService to the ActivityFragemnt
+     *
+     * @param savedInstanceState used for the saving of instance state on rotation or recreation of
+     *                           fragment
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // if there is no intent then
+        if (mPlayIntent == null) {
+            Activity playerActivity = getActivity();
+            // Create a new Intent on the base Activity and attach the MusicService Class
+            mPlayIntent = new Intent(playerActivity, MusicService.class);
+            // Bind the defined Intent with the MusicConnection for the TrackLIst
+            playerActivity.bindService(mPlayIntent, mMusicConnection, Context.BIND_AUTO_CREATE);
+            // Start the service after binding it
+            playerActivity.startService(mPlayIntent);
+        }
     }
 }

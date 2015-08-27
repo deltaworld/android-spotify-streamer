@@ -21,10 +21,10 @@ import uk.tareq.spotifystreamer.Model.MyTrack;
 public class MusicService extends Service implements MediaPlayer.OnPreparedListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
+    // instance var for the inner MusicBinder Class
+    private final IBinder musicBind = new MusicBinder();
     // Media Player
     private MediaPlayer mMediaPlayer;
-
-
     // Track List
     private ArrayList<MyTrack> mTracks;
     // current Position
@@ -89,7 +89,21 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        // return the MusicBinder innerclass Instance on connection
+        return musicBind;
+    }
+
+    /**
+     * When Service is disconnected and unbound from activity the media player is stopped & released
+     *
+     * @param intent containing the Service connection
+     * @return return false on completion of onUnbind
+     */
+    @Override
+    public boolean onUnbind(Intent intent) {
+        mMediaPlayer.stop();
+        mMediaPlayer.release();
+        return false;
     }
 
     /**
@@ -97,7 +111,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
      * between the Fragment and the Service classes. Here is a Binder instance
      */
     public class MusicBinder extends Binder {
-        MusicService getService() {
+
+
+        public MusicService getService() {
             return MusicService.this;
         }
     }

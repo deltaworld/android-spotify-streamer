@@ -8,7 +8,9 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import uk.tareq.spotifystreamer.Model.MyTrack;
@@ -21,6 +23,8 @@ import uk.tareq.spotifystreamer.Model.MyTrack;
 public class MusicService extends Service implements MediaPlayer.OnPreparedListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
+    private final String TAG = getClass().getSimpleName();
+
     // instance var for the inner MusicBinder Class
     private final IBinder musicBind = new MusicBinder();
     // Media Player
@@ -29,6 +33,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private ArrayList<MyTrack> mTracks;
     // current Position
     private int mTrackPosition;
+
 
     /**
      * Setter for mTracks a list, an ArrayList of <MyTrack> for storing the details of the track
@@ -71,9 +76,16 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         mMediaPlayer.setOnErrorListener(this);
     }
 
+    /**
+     * Callback when media has been prepared prior to playback
+     * Once the media has finished preparing, playback commences
+     *
+     * @param mp MediaPlayer object
+     */
     @Override
     public void onPrepared(MediaPlayer mp) {
-
+        // start playback
+        mp.start();
     }
 
     @Override
@@ -86,6 +98,38 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         return false;
     }
 
+    /**
+     * Play selected track using Music Service
+     */
+    public void playTrack() {
+        // Reset the media player prior to starting a new track
+        mMediaPlayer.reset();
+
+        // get selected track from the track list
+        MyTrack track = mTracks.get(mTrackPosition);
+
+        // URL of media stream of selected track
+        String trackUrl = track.trackUrl;
+
+        // pass the trackURL to the mediaPlayer and surround with try/catch in case of errors
+        try {
+            mMediaPlayer.setDataSource(trackUrl);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, "Error setting data source", e);
+        }
+        // Prepare the media for Aysync playback for stream -> onPrepared() callBack
+        mMediaPlayer.prepareAsync();
+    }
+
+    /**
+     * User defined method helper for track selection. Will be used for Next and Previous tracks
+     *
+     * @param trackIndex track index of the track to be played back by media player
+     */
+    public void setTrack(int trackIndex) {
+        mTrackPosition = trackIndex;
+    }
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {

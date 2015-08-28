@@ -21,11 +21,9 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import uk.tareq.spotifystreamer.MediaPlayerRegistry;
 import uk.tareq.spotifystreamer.Model.MyTrack;
 import uk.tareq.spotifystreamer.Model.MyTracks;
 import uk.tareq.spotifystreamer.MusicService;
@@ -115,7 +113,7 @@ public class PlayerActivityFragment extends Fragment {
 
             // Extras objects in vars
             String artistName = extras.getString("EXTRA_ARTIST_NAME");
-            int position = extras.getInt("EXTRA_POSITION");
+            final int position = extras.getInt("EXTRA_POSITION");
             myTracks = extras.getParcelable("EXTRA_MYTRACKS");
 
             String trackName = myTracks.myTracks.get(position).trackName;
@@ -157,39 +155,12 @@ public class PlayerActivityFragment extends Fragment {
                 albumImageView.setImageResource(R.drawable.nophoto);
             }
 
-            try {
-                mMediaPlayer.setDataSource(trackUrl);
-                mMediaPlayer.prepare();
-                mDuration = mMediaPlayer.getDuration();
-                mSeekBar.setMax(mDuration);
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            // Functionality of Player: PLAY
+            // PlayButton
             playButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    Log.i(TAG, "PLAY ");
-                    if (!mMediaPlayer.isPlaying()) {
-
-                        for (MediaPlayer player : MediaPlayerRegistry.mList) {
-                            if (player != null && player.isPlaying()) {
-                                player.release();
-                            }
-                        }
-                        MediaPlayerRegistry.mList.add(mMediaPlayer);
-                        mMediaPlayer.start();
-                        playButton.setImageResource(android.R.drawable.ic_media_pause);
-                        mDurationHandler.postDelayed(updateSeekBarTime, 100);
-                    } else {
-                        mMediaPlayer.pause();
-                        playButton.setImageResource(android.R.drawable.ic_media_play);
-                    }
-
-
+                    trackPicked(v, position);
+                    Log.i(TAG, "onClick " + position);
                 }
             });
 
@@ -251,5 +222,10 @@ public class PlayerActivityFragment extends Fragment {
             // Start the service after binding it
             playerActivity.startService(mPlayIntent);
         }
+    }
+
+    public void trackPicked(View view, int position) {
+        mMusicService.setTrack(position);
+        mMusicService.playTrack();
     }
 }

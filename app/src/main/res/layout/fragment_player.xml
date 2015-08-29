@@ -86,7 +86,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_weight="1"
-            android:src="@android:drawable/ic_media_play" />
+            android:src="@android:drawable/ic_media_pause"/>
 
         <ImageButton
             android:id="@+id/next_track_image_button"

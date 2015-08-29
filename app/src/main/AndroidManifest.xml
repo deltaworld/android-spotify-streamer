@@ -21,6 +21,7 @@
         -->
         <activity
             android:name=".Activity.ArtistActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTop">
             <intent-filter>
@@ -39,6 +40,7 @@
             android:name=".Activity.TrackActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_track"
+            android:launchMode="singleTop"
             android:parentActivityName=".Activity.ArtistActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -47,6 +49,7 @@
         <activity
             android:name=".Activity.PlayerActivity"
             android:label="@string/title_activity_player"
+            android:launchMode="singleTop"
             android:parentActivityName=".Activity.TrackActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

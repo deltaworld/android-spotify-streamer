@@ -34,6 +34,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     // current Position
     private int mTrackPosition;
 
+    private int mDuration;
+
+    private boolean mPaused = false;
+
 
     /**
      * Setter for mTracks a list, an ArrayList of <MyTrack> for storing the details of the track
@@ -86,6 +90,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public void onPrepared(MediaPlayer mp) {
         // start playback
         mp.start();
+        mDuration = mp.getDuration();
     }
 
     @Override
@@ -95,15 +100,53 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
+        mp.reset();
         return false;
     }
 
+    public int getDuration() {
+        return mDuration;
+    }
+
+    public int getCurrentPosition() {
+        return mMediaPlayer.getCurrentPosition();
+    }
     /**
      * Play selected track using Music Service
      */
     public void playTrack() {
+        if (!mPaused) {
+            // Reset the media player prior to starting a new track
+            mMediaPlayer.reset();
+
+            // get selected track from the track list
+            MyTrack track = mTracks.get(mTrackPosition);
+
+            // URL of media stream of selected track
+            String trackUrl = track.trackUrl;
+
+            // pass the trackURL to the mediaPlayer and surround with try/catch in case of errors
+            try {
+                mMediaPlayer.setDataSource(trackUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(TAG, "Error setting data source", e);
+            }
+            // Prepare the media for Aysync playback for stream -> onPrepared() callBack
+            mMediaPlayer.prepareAsync();
+        } else {
+            mMediaPlayer.start();
+        }
+    }
+
+    public void playNext() {
         // Reset the media player prior to starting a new track
+        mMediaPlayer.stop();
         mMediaPlayer.reset();
+        mTrackPosition++;
+
+        // Loop to beginning.
+        if (mTrackPosition >= mTracks.size()) mTrackPosition = 0;
 
         // get selected track from the track list
         MyTrack track = mTracks.get(mTrackPosition);
@@ -120,6 +163,48 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
         // Prepare the media for Aysync playback for stream -> onPrepared() callBack
         mMediaPlayer.prepareAsync();
+        //} else {
+        //    mMediaPlayer.start();
+        //}
+    }
+
+    public void playPrevious() {
+        // Reset the media player prior to starting a new track
+        mMediaPlayer.stop();
+        mMediaPlayer.reset();
+        mTrackPosition--;
+
+        // Loop to beginning.
+        if (mTrackPosition < 0) mTrackPosition = mTracks.size() - 1;
+
+        // get selected track from the track list
+        MyTrack track = mTracks.get(mTrackPosition);
+
+        // URL of media stream of selected track
+        String trackUrl = track.trackUrl;
+
+        // pass the trackURL to the mediaPlayer and surround with try/catch in case of errors
+        try {
+            mMediaPlayer.setDataSource(trackUrl);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, "Error setting data source", e);
+        }
+        // Prepare the media for Aysync playback for stream -> onPrepared() callBack
+        mMediaPlayer.prepareAsync();
+        //} else {
+        //    mMediaPlayer.start();
+        //}
+    }
+
+    public boolean isPlaying() {
+        return mMediaPlayer.isPlaying();
+    }
+
+
+    public void pauseTrack() {
+        mMediaPlayer.pause();
+        mPaused = true;
     }
 
     /**
@@ -146,8 +231,12 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     @Override
     public boolean onUnbind(Intent intent) {
         mMediaPlayer.stop();
-        mMediaPlayer.release();
+        //mMediaPlayer.release();
         return false;
+    }
+
+    public void seekTo(int progress) {
+        mMediaPlayer.seekTo(progress);
     }
 
     /**
@@ -155,7 +244,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
      * between the Fragment and the Service classes. Here is a Binder instance
      */
     public class MusicBinder extends Binder {
-
 
         public MusicService getService() {
             return MusicService.this;

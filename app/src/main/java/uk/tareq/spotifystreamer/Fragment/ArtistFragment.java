@@ -1,4 +1,4 @@
-package uk.tareq.spotifystreamer.ActivityFragment;
+package uk.tareq.spotifystreamer.Fragment;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,9 +33,10 @@ import uk.tareq.spotifystreamer.Utils;
 /**
  * Fragment for the Artist search and display results
  */
-public class ArtistActivityFragment extends Fragment {
+public class ArtistFragment extends Fragment {
 
-    private static final String LOG_TAG = ArtistActivityFragment.class.getSimpleName();
+    private static final String LOG_TAG = ArtistFragment.class.getSimpleName();
+    private static final String TRACKFRAGMENT = "TFTAG";
     // Progress Bar implementation
     // http://developer.android.com/reference/android/widget/ProgressBar.html
     private static final int PROGRESS = 0x1;
@@ -53,7 +56,7 @@ public class ArtistActivityFragment extends Fragment {
     /**
      * Default constructor
      */
-    public ArtistActivityFragment() {
+    public ArtistFragment() {
     }
 
     /**
@@ -152,10 +155,24 @@ public class ArtistActivityFragment extends Fragment {
 
                 String artistName = mArtistAdapter.getItem(position - 1).artistName;
 
-                Intent intent = new Intent(getActivity(), TrackActivity.class);
-                intent.putExtra(Intent.EXTRA_UID, artistId);
-                intent.putExtra(Intent.EXTRA_TEXT, artistName);
-                startActivity(intent);
+                boolean dualPane = getResources().getBoolean(R.bool.dual_pane);
+                if (!dualPane) {
+                    Intent intent = new Intent(getActivity(), TrackActivity.class);
+                    intent.putExtra(Intent.EXTRA_UID, artistId);
+                    intent.putExtra(Intent.EXTRA_TEXT, artistName);
+                    startActivity(intent);
+                } else {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("ARTIST_ID", artistId);
+                    bundle.putString("ARTIST_NAME", artistName);
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+                    Fragment trackFragment = new TrackFragment();
+                    trackFragment.setArguments(bundle);
+                    transaction.replace(R.id.track_container, trackFragment, TRACKFRAGMENT).commit();
+                }
+
             }
         });
 
@@ -180,6 +197,7 @@ public class ArtistActivityFragment extends Fragment {
                 }
                 return false;
             }
+
 
             @Override
             public boolean onQueryTextChange(String newText) {

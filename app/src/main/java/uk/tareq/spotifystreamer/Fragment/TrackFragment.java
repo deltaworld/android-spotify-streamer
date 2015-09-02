@@ -1,4 +1,4 @@
-package uk.tareq.spotifystreamer.ActivityFragment;
+package uk.tareq.spotifystreamer.Fragment;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -34,9 +34,9 @@ import uk.tareq.spotifystreamer.Utils;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class TrackActivityFragment extends Fragment {
+public class TrackFragment extends Fragment {
 
-    private static final String TAG = TrackActivityFragment.class.getSimpleName();
+    private static final String TAG = TrackFragment.class.getSimpleName();
     // Progress Bar implementation
     // http://developer.android.com/reference/android/widget/ProgressBar.html
     private static final int PROGRESS = 0x1;
@@ -49,9 +49,7 @@ public class TrackActivityFragment extends Fragment {
     private MyTracks myTracks = new MyTracks();
 
 
-
-
-    public TrackActivityFragment() {
+    public TrackFragment() {
     }
 
     /**
@@ -74,6 +72,18 @@ public class TrackActivityFragment extends Fragment {
             outState.putParcelableArray("track", parcelablesT);
         }
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        boolean dualPane = getResources().getBoolean(R.bool.dual_pane);
+        if (dualPane && getArguments() != null) {
+            mArtistId = getArguments().getString("ARTIST_ID");
+            mArtistName = getArguments().getString("ARTIST_NAME");
+
+        }
+        Log.i(TAG, "onCreate mArtistId" + mArtistId);
     }
 
     @Override
@@ -115,7 +125,9 @@ public class TrackActivityFragment extends Fragment {
         }
 
         if (Utils.isNetworkAvailable(getActivity())) {
-            new Top10TrackTask().execute(mArtistId); // run AsyncTask
+            if (mArtistId != null) {
+                new Top10TrackTask().execute(mArtistId); // run AsyncTask
+            }
             mProgress.setVisibility(View.VISIBLE);
         } else {
             Utils.giveToastMessage(getActivity(), getResources().getString(R.string.no_internet));

@@ -1,4 +1,4 @@
-package uk.tareq.spotifystreamer.ActivityFragment;
+package uk.tareq.spotifystreamer.Fragment;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -31,9 +31,9 @@ import uk.tareq.spotifystreamer.R;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class PlayerActivityFragment extends Fragment {
+public class PlayerFragment extends Fragment {
 
-    private static final String TAG = PlayerActivityFragment.class.getSimpleName();
+    private static final String TAG = PlayerFragment.class.getSimpleName();
 
     // UI: member var
     private View mRootView;
@@ -103,7 +103,7 @@ public class PlayerActivityFragment extends Fragment {
         }
     };
 
-    public PlayerActivityFragment() {
+    public PlayerFragment() {
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

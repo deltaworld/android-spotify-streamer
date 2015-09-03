@@ -104,6 +104,7 @@ public class PlayerFragment extends Fragment {
     };
 
     public PlayerFragment() {
+        setRetainInstance(true);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -222,6 +223,21 @@ public class PlayerFragment extends Fragment {
             playerActivity.startService(mPlayIntent);
         }
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mMusicBound) {
+            try {
+                getActivity().unbindService(mMusicConnection);
+            } catch (java.lang.IllegalArgumentException e) {
+                Log.e(TAG, "onDestroy IllegalArgumentException" + e.getMessage());
+            }
+        }
+        mMusicBound = false;
+
+    }
+
 
     public void playTrack(View view, int position) {
         mMusicService.setTrack(position);

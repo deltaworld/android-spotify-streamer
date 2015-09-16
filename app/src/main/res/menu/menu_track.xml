@@ -1,4 +1,10 @@
 <menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="uk.tareq.spotifystreamer.Activity.TrackActivity">
+    <item
+        android:id="@+id/now_playing"
+        android:title="Now Playing"
+        app:showAsAction="ifRoom|withText"/>
 </menu>

@@ -6,7 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import uk.tareq.spotifystreamer.MusicService;
 import uk.tareq.spotifystreamer.R;
+import uk.tareq.spotifystreamer.ServiceTools;
 
 
 public class TrackActivity extends AppCompatActivity {
@@ -31,7 +33,7 @@ public class TrackActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_track, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -41,7 +43,22 @@ public class TrackActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        return super.onOptionsItemSelected(item);
+        // Handle presses on the action bar items
+        switch (id) {
+            case R.id.now_playing:
+                // Check to see if Service is running
+                System.out.println(nowPlaying());
+                // TODO: 04/09/15 If it is running then take it back to fragment in backstack 
+                return true;
+            default:
+                //noinspection SimplifiableIfStatement
+                return super.onOptionsItemSelected(item);
+        }
+
+
+    }
+
+    private boolean nowPlaying() {
+        return ServiceTools.isServiceRunning(MusicService.class.getName(), getApplicationContext());
     }
 }

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import uk.tareq.spotifystreamer.Model.MyTrack;
 
 /**
+ * https://review.udacity.com/#!/projects/60/submit-repo
  * Created by Tareq Fadel on 23/08/15.
  * Service Worker for handling of the music player
  * http://code.tutsplus.com/tutorials/create-a-music-player-on-android-song-playback--mobile-22778

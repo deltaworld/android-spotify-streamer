@@ -77,6 +77,19 @@ public class PlayerFragment extends Fragment {
             mDurationHandler.postDelayed(this, 100);
         }
     };
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mMusicService != null || mSeekBar.getProgress() > 0) {
+
+            outState.putInt("playPosition", mSeekBar.getProgress());
+            Log.i(TAG, "onSaveInstanceState " + String.valueOf(mSeekBar.getProgress()));
+
+        }
+    }
+
     // Binding connection to the MusicService
     private ServiceConnection mMusicConnection = new ServiceConnection() {
         // When the Music Service is connected to the fragment callback
@@ -217,10 +230,23 @@ public class PlayerFragment extends Fragment {
             Activity playerActivity = getActivity();
             // Create a new Intent on the base Activity and attach the MusicService Class
             mPlayIntent = new Intent(playerActivity, MusicService.class);
-            // Bind the defined Intent with the MusicConnection for the TrackLIst
-            playerActivity.bindService(mPlayIntent, mMusicConnection, Context.BIND_AUTO_CREATE);
             // Start the service after binding it
             playerActivity.startService(mPlayIntent);
+            // Bind the defined Intent with the MusicConnection for the TrackLIst
+            if (!mMusicBound) {
+                playerActivity.bindService(mPlayIntent, mMusicConnection, Context.BIND_AUTO_CREATE);
+                mMusicBound = true;
+            }
+
+        }
+
+        if (savedInstanceState != null && savedInstanceState.containsKey("playPosition")) {
+            int playPosition = savedInstanceState.getInt("playPosition");
+            Log.i(TAG, "onCreate " + String.valueOf(playPosition));
+            mSeekBar.setProgress(playPosition);
+            mMusicService.seekTo(playPosition);
+            playTrack(mRootView, playPosition);
+
         }
     }
 
@@ -230,11 +256,12 @@ public class PlayerFragment extends Fragment {
         if (mMusicBound) {
             try {
                 getActivity().unbindService(mMusicConnection);
+                mMusicBound = false;
             } catch (java.lang.IllegalArgumentException e) {
                 Log.e(TAG, "onDestroy IllegalArgumentException" + e.getMessage());
             }
         }
-        mMusicBound = false;
+
 
     }
 
